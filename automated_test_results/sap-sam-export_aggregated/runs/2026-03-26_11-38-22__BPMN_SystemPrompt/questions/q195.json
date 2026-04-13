@@ -1,0 +1,298 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q195",
+    "question": "In which model of the organization does the 'Customer' participant appear in the most tasks? (Organization ID: 67e70970f0404a7e87122700ad26d87b)",
+    "durationMs": 110263,
+    "status": "OK",
+    "finalAnswer": "The 'Customer' participant appears in the most tasks in the model **\"Bike rental spezzato\"** with **14 tasks**.\n\nOther models in this organization with Customer participation:\n- incidentManagement (2): 9 tasks\n- Choreography-event-base: 2 tasks\n- choreographyPAR: 2 tasks\n- choreographyPAR(one) 2 sender: 2 tasks",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 59916,
+      "outputTokens": 2136,
+      "totalTokens": 62052
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6280,
+          "outputTokens": 276,
+          "totalTokens": 6556
+        },
+        "durationMs": 8723,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_qBpTEOO6gPD0OXeJ4dVRbn2f",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_qBpTEOO6gPD0OXeJ4dVRbn2f",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 6,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?org ?orgId ?orgName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId ?orgId .\n  OPTIONAL { ?org bbo:name ?orgName . }\n  FILTER(?orgId = \"67e70970f0404a7e87122700ad26d87b\")\n}\nLIMIT 10\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6472,
+          "outputTokens": 178,
+          "totalTokens": 6650
+        },
+        "durationMs": 20265,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_e67efde4e9ac4151a30495a7",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_e67efde4e9ac4151a30495a7",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "confidence": 0.9,
+          "decision": "retry",
+          "event": "after_sparql",
+          "reason": "Found the organization. Now need to explore how 'Customer' participant is linked to tasks to count tasks per model.",
+          "status": "ok"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6582,
+          "outputTokens": 349,
+          "totalTokens": 6931
+        },
+        "durationMs": 25235,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_af86c61703f54046b3250d08",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_af86c61703f54046b3250d08",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 20,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?task ?taskName ?part ?partName ?choreo ?choreoName ?model ?modelName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"67e70970f0404a7e87122700ad26d87b\" .\n  ?model tai:belongsTo ?org .\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo tai:belongsTo ?defs .\n  ?choreo a bboExt:Choreography .\n  OPTIONAL { ?choreo bbo:name ?choreoName . }\n  \n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n  ?task bbo:name ?taskName .\n  \n  ?participant a bboExt:Participant .\n  ?participant tai:belongsTo ?choreo .\n  ?participant bbo:name ?partName .\n  \n  FILTER(CONTAINS(LCASE(STR(?partName)), LCASE(\"Customer\")))\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 25
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9833,
+          "outputTokens": 597,
+          "totalTokens": 10430
+        },
+        "durationMs": 30016,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_4fcaf0ea00d44bfead9d3f03",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_4fcaf0ea00d44bfead9d3f03",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "confidence": 0.8,
+          "decision": "retry",
+          "event": "after_sparql",
+          "reason": "Found multiple models with Customer-related participants. Need to count tasks per model where 'Customer' is the initiating participant to find which model has the most.",
+          "rowCount": 25,
+          "status": "ok"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9955,
+          "outputTokens": 338,
+          "totalTokens": 10293
+        },
+        "durationMs": 8356,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_DnXZuxgtUUigjA03Dauuoywd",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_DnXZuxgtUUigjA03Dauuoywd",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 26,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?modelName (COUNT(DISTINCT ?task) AS ?taskCount) WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"67e70970f0404a7e87122700ad26d87b\" .\n  ?model tai:belongsTo ?org .\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo tai:belongsTo ?defs .\n  ?choreo a bboExt:Choreography .\n  \n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n  \n  ?participant a bboExt:Participant .\n  ?participant tai:belongsTo ?choreo .\n  ?participant bbo:name ?partName .\n  \n  FILTER(CONTAINS(LCASE(STR(?partName)), LCASE(\"Customer\")))\n}\nGROUP BY ?modelName\nORDER BY DESC(?taskCount)\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 5
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10326,
+          "outputTokens": 258,
+          "totalTokens": 10584
+        },
+        "durationMs": 7393,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_fGSUFY1U8Uy09M4dEpBQcFhy",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_fGSUFY1U8Uy09M4dEpBQcFhy",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 5,
+          "decision": "finalize",
+          "reason": "The query successfully counted tasks per model where 'Customer' appears as a participant. The model \"Bike rental spezzato\" has the most tasks (14), followed by \"incidentManagement (2)\" with 9 tasks.",
+          "confidence": 0
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10468,
+          "outputTokens": 140,
+          "totalTokens": 10608
+        },
+        "durationMs": 10190,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_RsrRgpOdYzjCkCah4EumCqcT",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_RsrRgpOdYzjCkCah4EumCqcT",
+        "parentCallId": "llm_0007",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "The 'Customer' participant appears in the most tasks in the model **\"Bike rental spezzato\"** with **14 tasks**.\n\nOther models in this organization with Customer participation:\n- incidentManagement (2): 9 tasks\n- Choreography-event-base: 2 tasks\n- choreographyPAR: 2 tasks\n- choreographyPAR(one) 2 sender: 2 tasks"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-27T00:05:03.871Z",
+        "status": "OK",
+        "finalAnswer": "The 'Customer' participant appears in the most tasks in the model **\"Bike rental spezzato\"** with **14 tasks**.\n\nOther models in this organization with Customer participation:\n- incidentManagement (2): 9 tasks\n- Choreography-event-base: 2 tasks\n- choreographyPAR: 2 tasks\n- choreographyPAR(one) 2 sender: 2 tasks",
+        "afterCallId": "llm_0007"
+      }
+    ],
+    "counts": {
+      "llmCalls": 7,
+      "toolExecs": 7
+    }
+  }
+}

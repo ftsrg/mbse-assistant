@@ -245,8 +245,9 @@ def execute_rml(bpmn_to_ontology_mapping, kg_output, serialization_format) -> No
 
     try:
         rdflib.Graph().parse(str(kg_output), format=serialization_format)
-    except Exception as e:
-        logging.info(e)
+    except Exception:
+        logging.exception("Transformation failed")
+        raise
     else:
         logging.info(f'Transformation successfull, file saved to {kg_output}')
 

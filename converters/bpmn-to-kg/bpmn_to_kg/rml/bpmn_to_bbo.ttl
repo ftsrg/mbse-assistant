@@ -20,6 +20,9 @@
 
 @prefix rami: <https://w3id.org/i40/rami#> .
 
+@prefix bboExtension:       <https://www.teamingai-project.eg/BBOExtension#>.
+
+
 
 
 
@@ -61,6 +64,14 @@ teamingAI:ProcessMapping
         rr:predicate        teamingAI:belongsToRAMILayer ;
         rr:objectMap [
             rr:constant     rami:Business
+        ]
+    ] ;
+
+    # extension to keep the name of the process
+    rr:predicateObjectMap [
+        rr:predicate        bbo:name ;
+        rr:objectMap [
+            rml:reference   "@name"
         ]
     ] ;
 
@@ -116,7 +127,7 @@ teamingAI:SubProcessMapping
 
 
 
-teamingAI:ErrorMapping
+teamingAI:ProcessErrorMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -160,7 +171,7 @@ teamingAI:ErrorMapping
 
 
 
-teamingAI:PropertyMapping
+teamingAI:ProcessPropertyMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -212,7 +223,7 @@ teamingAI:PropertyMapping
 
 
 
-teamingAI:StartEventMapping
+teamingAI:ProcessStartEventMapping
     a rr:TriplesMap ;
     rml:logicalSource [
         rml:source                  "/home/bachhofner/Dev/business-process-management-to-knowledge-graph/bpmn/farplas/process_without_messages.bpmn" ;
@@ -272,7 +283,7 @@ teamingAI:StartEventMapping
 
 
 
-teamingAI:EndEventMapping
+teamingAI:ProcessEndEventMapping
     a rr:TriplesMap ;
     rml:logicalSource [
         rml:source                  "/home/bachhofner/Dev/business-process-management-to-knowledge-graph/bpmn/farplas/process_without_messages.bpmn" ;
@@ -324,7 +335,7 @@ teamingAI:EndEventMapping
 
 
 
-teamingAI:BoundaryEventMapping
+teamingAI:ProcessBoundaryEventMapping
     a rr:TriplesMap ;
 
     rml:logicalSource [
@@ -391,7 +402,7 @@ teamingAI:BoundaryEventMapping
 
 
 
-teamingAI:ErrorEventDefinitionMapping
+teamingAI:ProcessErrorEventDefinitionMapping
     a rr:TriplesMap ;
 
     rml:logicalSource [
@@ -429,7 +440,7 @@ teamingAI:ErrorEventDefinitionMapping
 .
 
 
-teamingAI:MessageEventDefinitionMapping
+teamingAI:ProcessMessageEventDefinitionMapping
     a rr:TriplesMap ;
 
     rml:logicalSource [
@@ -468,7 +479,7 @@ teamingAI:MessageEventDefinitionMapping
 
 
 
-teamingAI:IntermediateThrowMapping
+teamingAI:ProcessIntermediateThrowMapping
     a rr:TriplesMap ;
 
     rml:logicalSource [
@@ -537,13 +548,12 @@ teamingAI:IntermediateThrowMapping
 
 #################################################################################################################
 #
-# Sequence Flow Mappings
+# sequenceFlow
+# Summary parent: process
 #
 #################################################################################################################
 
-
-
-teamingAI:SequenceFlowMapping
+teamingAI:ProcessSequenceFlowMapping
     a rr:TriplesMap ;
 
     rml:logicalSource [
@@ -551,7 +561,6 @@ teamingAI:SequenceFlowMapping
         rml:referenceFormulation    ql:XPath ;
         rml:iterator                "/*[name()='bpmn:definitions']/*[name()='bpmn:process']/*[name()='bpmn:sequenceFlow']"
     ] ;
-
 
     rr:subjectMap [
         rr:template                 "https://www.teamingai-project.eu/kg/process/qualityInspection/{@id}"
@@ -565,10 +574,24 @@ teamingAI:SequenceFlowMapping
     ] ;
 
     rr:predicateObjectMap [
-        rr:predicate                rdfs:label ;
-        rr:ObjectMap [
-            rr:constant             "sequence flow" ;
+        rr:predicate                rdfs:comment ;
+        rr:objectMap [
+            rr:constant             "A Sequence Flow is used to show the order of Flow Elements in a Process or a Choreography. Each Sequence Flow has only one source and only one target. The source and target MUST be from the set of the following Flow Elements: Events (Start, Intermediate, and End), Activities (Task and Sub-Process; for Processes), Choreography Activities (Choreography Task and Sub-Choreography; for Choreographies), and Gateways." ;
             rr:language             "en"
+        ]
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate                teamingAI:belongsToProcess ;
+        rr:objectMap [
+            rr:parentTriplesMap     teamingAI:ProcessMapping
+        ]
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate                bbo:name ;
+        rr:objectMap [
+            rml:reference           "@name"
         ]
     ] ;
 
@@ -585,111 +608,79 @@ teamingAI:SequenceFlowMapping
             rr:template             "https://www.teamingai-project.eu/kg/process/qualityInspection/{@targetRef}"
         ]
     ] ;
-    
-    rr:predicateObjectMap [
-        rr:predicate            rdfs:comment ;
-        rr:objectMap [
-            rr:constant         "A Sequence Flow is used to show the order of Flow Elements in a Process or a Choreography. Each Sequence Flow has only one source and only one target. The source and target MUST be from the set of the following Flow Elements: Events (Start, Intermediate, and End), Activities (Task and Sub-Process; for Processes), Choreography Activities (Choreography Task and Sub-Choreography; for Choreographies), and Gateways." ;
-            rr:language         "en"
-        ]
-    ] ;
 
     rr:predicateObjectMap [
-        rr:predicate        teamingAI:belongsToProcess ;
+        rr:predicate                bbo:condition ;
         rr:objectMap [
-            rr:parentTriplesMap teamingAI:ProcessMapping
-        ]
-    ] ;
-
-    rr:predicateObjectMap [
-        rr:predicate                    bbo:name ;
-        rr:objectMap [
-            rml:reference               "@name" ;
+            rr:parentTriplesMap     teamingAI:ProcessSequenceFlowConditionExpressionMapping ;
+            rr:joinCondition [
+                rr:child            "@id" ;
+                rr:parent           "../@id"
+            ]
         ]
     ] .
 
+#################################################################################################################
+#
+# sequenceFlowConditionExpression
+# Summary parent: process/sequenceFlow
+# Summary attributes: xsi:type
+# Summary text content: expression
+#
+#################################################################################################################
 
-
-
-teamingAI:OutgoingMapping
-    a   rr:TriplesMap ;
+teamingAI:ProcessSequenceFlowConditionExpressionMapping
+    a rr:TriplesMap ;
 
     rml:logicalSource [
         rml:source                  "/home/bachhofner/Dev/business-process-management-to-knowledge-graph/bpmn/farplas/process_without_messages.bpmn" ;
         rml:referenceFormulation    ql:XPath ;
-        rml:iterator                "//*[name()='bpmn:outgoing']"
+        rml:iterator                "/*[local-name()='definitions']/*[local-name()='process']/*[local-name()='sequenceFlow']/*[local-name()='conditionExpression']"
     ] ;
 
     rr:subjectMap [
-        rr:template             "https://www.teamingai-project.eu/kg/process/qualityInspection/{*[text()]}"
+        rr:template                 "https://www.teamingai-project.eu/kg/process/qualityInspection/{../@id}/conditionExpression/{position()}"
     ] ;
 
     rr:predicateObjectMap [
-        rr:predicate            rdfs:subClassOf ;
+        rr:predicate                rdfs:subClassOf ;
         rr:objectMap [
-            rr:constant         bbo:SequenceFlow
-        ]
-    ] ;
-    
-    rr:predicateObjectMap [
-        rr:predicate            rdfs:comment ;
-        rr:objectMap [
-            rr:constant         "A Sequence Flow is used to show the order of Flow Elements in a Process or a Choreography. Each Sequence Flow has only one source and only one target. The source and target MUST be from the set of the following Flow Elements: Events (Start, Intermediate, and End), Activities (Task and Sub-Process; for Processes), Choreography Activities (Choreography Task and Sub-Choreography; for Choreographies), and Gateways." ;
-            rr:language         "en"
+            rr:constant             bbo:conditionExpression
         ]
     ] ;
 
     rr:predicateObjectMap [
-        rr:predicate        teamingAI:belongsToProcess ;
+        rr:predicate                teamingAI:belongsToProcessSequenceFlow ;
         rr:objectMap [
-            rr:parentTriplesMap teamingAI:ProcessMapping
-        ]
-    ] .
-
-
-teamingAI:IncomingMapping
-    a   rr:TriplesMap ;
-
-    rml:logicalSource [
-        rml:source                  "/home/bachhofner/Dev/business-process-management-to-knowledge-graph/bpmn/farplas/process_without_messages.bpmn" ;
-        rml:referenceFormulation    ql:XPath ;
-        rml:iterator                "//*[name()='bpmn:incoming']"
-    ] ;
-
-    rr:subjectMap [
-        rr:template             "https://www.teamingai-project.eu/kg/process/qualityInspection/{*[text()]}"
-    ] ;
-
-    rr:predicateObjectMap [
-        rr:predicate            rdfs:subClassOf ;
-        rr:objectMap [
-            rr:constant         bbo:SequenceFlow
+            rr:parentTriplesMap     teamingAI:ProcessSequenceFlowMapping ;
+            rr:joinCondition [
+                rr:child            "../@id" ;
+                rr:parent           "@id"
+            ]
         ]
     ] ;
 
     rr:predicateObjectMap [
-        rr:predicate            rdfs:label ;
+        rr:predicate                rdfs:comment ;
         rr:objectMap [
-            rr:constant         "incoming" ;
-            rr:language         "en"
-        ]
-    ] ;
-    
-    rr:predicateObjectMap [
-        rr:predicate            rdfs:comment ;
-        rr:objectMap [
-            rr:constant         "A Sequence Flow is used to show the order of Flow Elements in a Process or a Choreography. Each Sequence Flow has only one source and only one target. The source and target MUST be from the set of the following Flow Elements: Events (Start, Intermediate, and End), Activities (Task and Sub-Process; for Processes), Choreography Activities (Choreography Task and Sub-Choreography; for Choreographies), and Gateways." ;
-            rr:language         "en"
+            rr:constant             "A conditionExpression defines when a flow is taken. It is a boolean expression that can access the process variables and compare them with literals or other variables. The condition is fulfilled when the expression returns true." ;
+            rr:language             "en"
         ]
     ] ;
 
     rr:predicateObjectMap [
-        rr:predicate        teamingAI:belongsToProcess ;
+        rr:predicate                bbo:xsi_type ;
         rr:objectMap [
-            rr:parentTriplesMap teamingAI:ProcessMapping
+            rml:reference           "@*[local-name()='type']"
+        ]
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate                bbo:expression ;
+        rr:objectMap [
+            rml:reference           "text()"
         ]
     ] .
-
 
 #################################################################################################################
 #
@@ -699,7 +690,7 @@ teamingAI:IncomingMapping
 
 
 
-teamingAI:TaskMapping
+teamingAI:ProcessTaskMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -753,7 +744,7 @@ teamingAI:TaskMapping
 
 
 
-teamingAI:ServiceTaskMapping
+teamingAI:ProcessServiceTaskMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -808,7 +799,7 @@ teamingAI:ServiceTaskMapping
 
 
 
-teamingAI:UserTaskMapping
+teamingAI:ProcessUserTaskMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -862,7 +853,7 @@ teamingAI:UserTaskMapping
 
 
 
-teamingAI:ManualTask
+teamingAI:ProcessManualTask
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -914,7 +905,7 @@ teamingAI:ManualTask
 
 
 
-teamingAI:SendTaskMapping
+teamingAI:ProcessSendTaskMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -967,7 +958,7 @@ teamingAI:SendTaskMapping
 
 
 
-teamingAI:ReceiveTaskMapping
+teamingAI:ProcessReceiveTaskMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -1020,7 +1011,7 @@ teamingAI:ReceiveTaskMapping
 
 
 
-teamingAI:BusinessRuleTaskMapping
+teamingAI:ProcessBusinessRuleTaskMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -1072,7 +1063,7 @@ teamingAI:BusinessRuleTaskMapping
 
 
 
-teamingAI:ScriptTaskMapping
+teamingAI:ProcessScriptTaskMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -1131,7 +1122,7 @@ teamingAI:ScriptTaskMapping
 
 
 
-teamingAI:ParallelGatewayMapping
+teamingAI:ProcessParallelGatewayMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [
@@ -1206,7 +1197,7 @@ teamingAI:ParallelGatewayMapping
 
 
 
-teamingAI:eXlusiveORGatewayMapping
+teamingAI:ProcesseXlusiveORGatewayMapping
     a   rr:TriplesMap ;
 
     rml:logicalSource [

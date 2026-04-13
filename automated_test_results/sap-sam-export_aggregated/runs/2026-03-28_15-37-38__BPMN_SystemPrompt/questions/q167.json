@@ -1,0 +1,299 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q167",
+    "question": "Which organizations contain models related to university application processes?",
+    "durationMs": 28879,
+    "status": "OK",
+    "finalAnswer": "Three organizations contain models related to university application processes:\n\n1. **Org31** - 1 model: \"izdavanje kartice student, DOMACI\" (student card issuance)\n\n2. **Org32** - 2 models: \n   - \"203Track Application Status\"\n   - \"203Cancel Application (Copy)\"\n\n3. **Org41** - 1 model: \"verify application Requirements\"\n\nThese organizations have a total of 4 models dealing with university application-related processes, including application tracking, cancellation, requirements verification, and student card issuance.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 53537,
+      "outputTokens": 1630,
+      "totalTokens": 55167
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6623,
+          "outputTokens": 319,
+          "totalTokens": 6942
+        },
+        "durationMs": 5562,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_97629ea66e534be1aa5b2a3a",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_97629ea66e534be1aa5b2a3a",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 6,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?model ?modelName ?org ?orgLabel WHERE {\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  ?org a bboExt:Organization .\n  OPTIONAL { ?org rdfs:label ?orgLabel . }\n  FILTER(CONTAINS(LCASE(STR(?modelName)), LCASE(\"university\")) || \n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"application\")) ||\n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"admission\")))\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 3
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7152,
+          "outputTokens": 185,
+          "totalTokens": 7337
+        },
+        "durationMs": 3738,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_8feac255a49746f9945bd48f",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_8feac255a49746f9945bd48f",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 3,
+          "decision": "retry",
+          "reason": "Found 3 models related to university application processes in Org41 and Org32. Need to explore further to get complete list of organizations and verify if there are more related models with different naming patterns.",
+          "confidence": 0.7
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7304,
+          "outputTokens": 366,
+          "totalTokens": 7670
+        },
+        "durationMs": 5840,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_d0fb1acd467b4931ad9b176e",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_d0fb1acd467b4931ad9b176e",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 8,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?org ?orgLabel (COUNT(DISTINCT ?model) as ?modelCount) WHERE {\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  ?org a bboExt:Organization .\n  OPTIONAL { ?org rdfs:label ?orgLabel . }\n  FILTER(CONTAINS(LCASE(STR(?modelName)), LCASE(\"university\")) || \n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"application\")) ||\n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"admission\")) ||\n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"student\")) ||\n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"enrollment\")) ||\n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"enrolment\")))\n}\nGROUP BY ?org ?orgLabel\nORDER BY DESC(?modelCount)\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 3
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7756,
+          "outputTokens": 167,
+          "totalTokens": 7923
+        },
+        "durationMs": 3760,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_5d713470db4644fda3007353",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_5d713470db4644fda3007353",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 3,
+          "decision": "retry",
+          "reason": "Found 3 organizations (Org32, Org31, Org41) with models related to university application processes. Need to get specific model names from each organization to provide complete examples in the final answer.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7910,
+          "outputTokens": 294,
+          "totalTokens": 8204
+        },
+        "durationMs": 5131,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_b9c3bdf5fce747579044c98a",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_b9c3bdf5fce747579044c98a",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?orgLabel ?modelName WHERE {\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  ?org a bboExt:Organization .\n  OPTIONAL { ?org rdfs:label ?orgLabel . }\n  FILTER(CONTAINS(LCASE(STR(?modelName)), LCASE(\"university\")) || \n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"application\")) ||\n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"admission\")) ||\n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"student\")) ||\n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"enrollment\")) ||\n         CONTAINS(LCASE(STR(?modelName)), LCASE(\"enrolment\")))\n}\nORDER BY ?orgLabel ?modelName\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 4
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8314,
+          "outputTokens": 145,
+          "totalTokens": 8459
+        },
+        "durationMs": 2306,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_73efa5c80a174bc593056887",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_73efa5c80a174bc593056887",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 2,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 4,
+          "decision": "finalize",
+          "reason": "Found all organizations with university application-related models. Have complete data: Org31 (1 model about student card), Org32 (2 models about application tracking/cancellation), Org41 (1 model about application requirements verification). Ready to provide final answer.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8478,
+          "outputTokens": 154,
+          "totalTokens": 8632
+        },
+        "durationMs": 2485,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_a39ca30eca854b9c87d1e8e3",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_a39ca30eca854b9c87d1e8e3",
+        "parentCallId": "llm_0007",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Three organizations contain models related to university application processes:\n\n1. **Org31** - 1 model: \"izdavanje kartice student, DOMACI\" (student card issuance)\n\n2. **Org32** - 2 models: \n   - \"203Track Application Status\"\n   - \"203Cancel Application (Copy)\"\n\n3. **Org41** - 1 model: \"verify application Requirements\"\n\nThese organizations have a total of 4 models dealing with university application-related processes, including application tracking, cancellation, requirements verification, and student card issuance."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-28T17:19:04.696Z",
+        "status": "OK",
+        "finalAnswer": "Three organizations contain models related to university application processes:\n\n1. **Org31** - 1 model: \"izdavanje kartice student, DOMACI\" (student card issuance)\n\n2. **Org32** - 2 models: \n   - \"203Track Application Status\"\n   - \"203Cancel Application (Copy)\"\n\n3. **Org41** - 1 model: \"verify application Requirements\"\n\nThese organizations have a total of 4 models dealing with university application-related processes, including application tracking, cancellation, requirements verification, and student card issuance.",
+        "afterCallId": "llm_0007"
+      }
+    ],
+    "counts": {
+      "llmCalls": 7,
+      "toolExecs": 7
+    }
+  }
+}

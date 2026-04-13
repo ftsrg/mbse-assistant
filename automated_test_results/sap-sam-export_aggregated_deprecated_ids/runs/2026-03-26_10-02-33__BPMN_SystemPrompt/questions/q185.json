@@ -1,0 +1,149 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q185",
+    "question": "Which models in the organization deal with restaurant or food ordering processes? (Organization ID: 985f88f59e8b4962a0a2c2fec001b6d1)",
+    "durationMs": 7508,
+    "status": "OK",
+    "finalAnswer": "Models in organization 985f88f59e8b4962a0a2c2fec001b6d1 that match restaurant/food ordering (or ordering) keywords:\n\n1) Auktionshaus_Online\n- Model URI: https://www.teamingai-project.eu/kg/model/sid_ece51571_13ba_41d8_8688_057c876cc093\n- Created: 2019-05-10T11:18:16\n- Original ID: 262d9e9b8c224d918fe800cd2a454ddf\n- Normalized ID: sid_ece51571_13ba_41d8_8688_057c876cc093\n\n2) AppStore: Choereographiediagramm\n- Model URI: https://www.teamingai-project.eu/kg/model/sid_37f6bdb5_b8bd_4d7f_af9e_396a0123f3fe\n- Created: 2017-06-13T13:28:18\n- Original ID: fb94637911144e53a9174ad421ecf95a\n- Normalized ID: sid_37f6bdb5_b8bd_4d7f_af9e_396a0123f3fe",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 19329,
+      "outputTokens": 885,
+      "totalTokens": 20214
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 5902,
+          "outputTokens": 456,
+          "totalTokens": 6358
+        },
+        "durationMs": 2970,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_f1pYSs6Sp9zxmlydH5bhohvl",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_f1pYSs6Sp9zxmlydH5bhohvl",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 778,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?model ?modelName ?created ?origId ?normId WHERE {\n  ?org a bboExt:Organization ;\n       tai:organizationId \"985f88f59e8b4962a0a2c2fec001b6d1\" .\n  ?model a bboExt:Model ;\n         tai:belongsTo ?org ;\n         bbo:name ?modelName ;\n         tai:modelCreated ?created ;\n         tai:originalId ?origId ;\n         tai:normalizedId ?normId .\n\n  {\n    ?model bbo:name ?modelName2 .\n    FILTER(CONTAINS(LCASE(STR(?modelName2)), \"restaurant\") || CONTAINS(LCASE(STR(?modelName2)), \"food\") || CONTAINS(LCASE(STR(?modelName2)), \"order\"))\n  }\n  UNION\n  {\n    ?defs tai:belongsTo ?model .\n    ?elem bbo:name ?elemName .\n    FILTER(\n      CONTAINS(LCASE(STR(?elemName)), \"restaurant\") ||\n      CONTAINS(LCASE(STR(?elemName)), \"food\") ||\n      CONTAINS(LCASE(STR(?elemName)), \"order\")\n    )\n    FILTER( ?defs = ?elem || EXISTS { ?elem tai:belongsTo ?choreo . ?choreo tai:belongsTo ?defs } )\n  }\n}\nORDER BY DESC(?created)\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 2
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6640,
+          "outputTokens": 130,
+          "totalTokens": 6770
+        },
+        "durationMs": 1610,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_E39IGpR9DeqCr34RFE5OkYMr",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_E39IGpR9DeqCr34RFE5OkYMr",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 2,
+          "errorType": "",
+          "message": "The query returned two distinct models under organization ID 985f88f59e8b4962a0a2c2fec001b6d1. Both were matched by name/content keywords related to restaurant/food ordering or ordering processes.",
+          "decision": "finalize",
+          "reason": "There are results (2 models) and they directly answer which models in the specified organization deal with restaurant or food ordering processes. No further refinement is required.",
+          "confidence": 0.74
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6787,
+          "outputTokens": 299,
+          "totalTokens": 7086
+        },
+        "durationMs": 2132,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_7p1t0cwXcN8OKfPu9CTV83j7",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_7p1t0cwXcN8OKfPu9CTV83j7",
+        "parentCallId": "llm_0003",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Models in organization 985f88f59e8b4962a0a2c2fec001b6d1 that match restaurant/food ordering (or ordering) keywords:\n\n1) Auktionshaus_Online\n- Model URI: https://www.teamingai-project.eu/kg/model/sid_ece51571_13ba_41d8_8688_057c876cc093\n- Created: 2019-05-10T11:18:16\n- Original ID: 262d9e9b8c224d918fe800cd2a454ddf\n- Normalized ID: sid_ece51571_13ba_41d8_8688_057c876cc093\n\n2) AppStore: Choereographiediagramm\n- Model URI: https://www.teamingai-project.eu/kg/model/sid_37f6bdb5_b8bd_4d7f_af9e_396a0123f3fe\n- Created: 2017-06-13T13:28:18\n- Original ID: fb94637911144e53a9174ad421ecf95a\n- Normalized ID: sid_37f6bdb5_b8bd_4d7f_af9e_396a0123f3fe"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T10:16:02.980Z",
+        "status": "OK",
+        "finalAnswer": "Models in organization 985f88f59e8b4962a0a2c2fec001b6d1 that match restaurant/food ordering (or ordering) keywords:\n\n1) Auktionshaus_Online\n- Model URI: https://www.teamingai-project.eu/kg/model/sid_ece51571_13ba_41d8_8688_057c876cc093\n- Created: 2019-05-10T11:18:16\n- Original ID: 262d9e9b8c224d918fe800cd2a454ddf\n- Normalized ID: sid_ece51571_13ba_41d8_8688_057c876cc093\n\n2) AppStore: Choereographiediagramm\n- Model URI: https://www.teamingai-project.eu/kg/model/sid_37f6bdb5_b8bd_4d7f_af9e_396a0123f3fe\n- Created: 2017-06-13T13:28:18\n- Original ID: fb94637911144e53a9174ad421ecf95a\n- Normalized ID: sid_37f6bdb5_b8bd_4d7f_af9e_396a0123f3fe",
+        "afterCallId": "llm_0003"
+      }
+    ],
+    "counts": {
+      "llmCalls": 3,
+      "toolExecs": 3
+    }
+  }
+}

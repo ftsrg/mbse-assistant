@@ -1,0 +1,261 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q102",
+    "question": "Which model has a task called 'für unbekannte Daten  passende, analoge  Materialien finden'?",
+    "durationMs": 29962,
+    "status": "OK",
+    "finalAnswer": "The task \"für unbekannte Daten passende, analoge Materialien finden\" is found in two models from Org7:\n\n1. **Neues Produkt V1.0 (Kopie)** (Model ID: f88e1ec76baa4a5ab433c4e74523ccee)\n2. **Neues Produkt V1.0** (Model ID: 3d0f07f9b84c4e31bbca562f472c8885)\n\nBoth models contain this choreography task, with the first being a copy of the second.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 43892,
+      "outputTokens": 1304,
+      "totalTokens": 45196
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6634,
+          "outputTokens": 284,
+          "totalTokens": 6918
+        },
+        "durationMs": 6388,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_bfe94d5015044465b95fda90",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_bfe94d5015044465b95fda90",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 37,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?elem ?name ?type ?comment WHERE {\n  ?elem bbo:name ?name .\n  FILTER(CONTAINS(LCASE(STR(?name)), LCASE(\"für unbekannte Daten\")))\n  ?elem a ?type .\n  OPTIONAL { ?elem rdfs:comment ?comment . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6978,
+          "outputTokens": 165,
+          "totalTokens": 7143
+        },
+        "durationMs": 4251,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_94d7c37cd37243f883980d55",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_94d7c37cd37243f883980d55",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 2,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 1,
+          "decision": "retry",
+          "reason": "Found the task element. Now need to trace the containment hierarchy to find which model it belongs to. Will follow tai:belongsTo path from task to choreography to definitions to model.",
+          "confidence": 0.9
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7125,
+          "outputTokens": 321,
+          "totalTokens": 7446
+        },
+        "durationMs": 6720,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_1f3c6b171ca54178b51cfb7c",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_1f3c6b171ca54178b51cfb7c",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 48,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?modelName ?modelId ?orgLabel WHERE {\n  ?task a bboExt:ChoreographyTask .\n  ?task bbo:name ?taskName .\n  FILTER(CONTAINS(LCASE(STR(?taskName)), LCASE(\"für unbekannte Daten\")))\n  ?task tai:belongsTo ?choreo .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?definitions .\n  ?definitions a bboExt:Definitions .\n  ?definitions tai:belongsTo ?model .\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  OPTIONAL { ?model tai:originalId ?modelId . }\n  OPTIONAL { ?model tai:belongsTo ?org . ?org rdfs:label ?orgLabel . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 2
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7568,
+          "outputTokens": 150,
+          "totalTokens": 7718
+        },
+        "durationMs": 3885,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_bd01e77c333541a6b229af4e",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_bd01e77c333541a6b229af4e",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 2,
+          "decision": "finalize",
+          "reason": "Found 2 models containing the task: 'Neues Produkt V1.0 (Kopie)' and 'Neues Produkt V1.0', both from Org7. The task appears in both models (likely a copy scenario). Will present both results with their model IDs.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7737,
+          "outputTokens": 94,
+          "totalTokens": 7831
+        },
+        "durationMs": 2631,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_ac93da4491144251b629075f",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_ac93da4491144251b629075f",
+        "parentCallId": "llm_0005",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "decision": "finalize",
+          "reason": "Ready to provide final answer with the two models found containing the specified task.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7850,
+          "outputTokens": 290,
+          "totalTokens": 8140
+        },
+        "durationMs": 5957,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_84d075b776a743d784026b18",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_84d075b776a743d784026b18",
+        "parentCallId": "llm_0006",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "The task \"für unbekannte Daten passende, analoge Materialien finden\" is found in two models from Org7:\n\n1. **Neues Produkt V1.0 (Kopie)** (Model ID: f88e1ec76baa4a5ab433c4e74523ccee)\n2. **Neues Produkt V1.0** (Model ID: 3d0f07f9b84c4e31bbca562f472c8885)\n\nBoth models contain this choreography task, with the first being a copy of the second."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T09:39:11.023Z",
+        "status": "OK",
+        "finalAnswer": "The task \"für unbekannte Daten passende, analoge Materialien finden\" is found in two models from Org7:\n\n1. **Neues Produkt V1.0 (Kopie)** (Model ID: f88e1ec76baa4a5ab433c4e74523ccee)\n2. **Neues Produkt V1.0** (Model ID: 3d0f07f9b84c4e31bbca562f472c8885)\n\nBoth models contain this choreography task, with the first being a copy of the second.",
+        "afterCallId": "llm_0006"
+      }
+    ],
+    "counts": {
+      "llmCalls": 6,
+      "toolExecs": 6
+    }
+  }
+}

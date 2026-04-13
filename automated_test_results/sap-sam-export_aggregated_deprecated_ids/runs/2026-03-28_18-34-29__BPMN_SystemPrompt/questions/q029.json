@@ -1,0 +1,383 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q029",
+    "question": "Can you suggest any improvements for this model? (Model ID: 4ccc3fd711004f519782ac92e58f6ddd)",
+    "durationMs": 21708,
+    "status": "OK",
+    "finalAnswer": "Here are concrete improvement suggestions for model **4ccc3fd711004f519782ac92e58f6ddd** (name: **“Aufgabe 1: 4 Augen-Prüfung”**):\n\n1) **Fix/clarify the XOR gateway “default”**\n- The exclusive gateway (type **ExclusiveGateway**) has **gatewayDirection = Diverging**.\n- Its **default** is set to **sid-87973F1F-DC71-4FC4-AB0C-1EC45459ED7C**.\n- However, that value corresponds to the **same gateway node IRI/id you’re selecting as “default”**, not to a target branch task/end. In BPMN, “default” should be the *ID of the outgoing sequence flow* (or otherwise unambiguously one outgoing path), so review the wiring and set the default to the correct outgoing path.\n\n2) **Name the gateway and the end event (readability + maintainability)**\n- The **StartEvent** and **ExclusiveGateway** are returned with **empty bbo:name**.\n- The **EndEvent** is also returned with **empty bbo:name**.\n- Add meaningful labels (e.g., “Start: Antrag eingehen”, “Entscheidung: Zustimmung/Ablehnung”, “Ende”) so the process is understandable without looking at diagram context.\n\n3) **Ensure both branches explicitly converge (current structure is close but verify semantics)**\n- Outgoing from the XOR gateway:\n  - Branch 1: **Informieren über Zustimmung** → **EndEvent**\n  - Branch 2: **Informieren über Ablehnung** → **EndEvent**\n- This is structurally fine (both reach the end), but since the gateway is unnamed and the “default” seems questionable, verify that the converging point is clearly indicated in the BPMN rendering and that the default branch matches the intended most-likely outcome.\n\n4) **Improve task naming consistency for “4-eyes” intent**\n- Tasks are:\n  - **“Schickt Antragsformular ab”**\n  - **“Informieren über Zustimmung”**\n  - **“Informieren über Ablehnung”**\n- Consider making the approval/review action explicit (e.g., “4-Augen Prüfung durchführen”, “Prüferstellung Zustimmung/Ablehnung erteilen”) so the choreography clearly communicates where the second reviewer/verifier is represented.\n\n5) **Check for missing flow label/condition information on the XOR branches**\n- You have the XOR split, but no conditions/labels were surfaced in the triples for the outgoing paths.\n- In BPMN, add branch conditions (or gateway documentation) indicating what constitutes **“Zustimmung” vs “Ablehnung”** (even if it’s textual via annotations), so the decision logic is explicit.\n",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 70259,
+      "outputTokens": 2841,
+      "totalTokens": 73100
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 5892,
+          "outputTokens": 219,
+          "totalTokens": 6111
+        },
+        "durationMs": 1988,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_Bdn1BEdYjPeEf28iU9NIt3he",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_Bdn1BEdYjPeEf28iU9NIt3he",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?model ?modelName ?origId ?created WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId ?origId .\n  FILTER(STR(?origId) = \"4ccc3fd711004f519782ac92e58f6ddd\")\n  OPTIONAL { ?model bbo:name ?modelName . }\n  OPTIONAL { ?model tai:modelCreated ?created . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6249,
+          "outputTokens": 143,
+          "totalTokens": 6392
+        },
+        "durationMs": 1301,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_1k9CR0nZByXp0DQvVjxLn3vS",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_1k9CR0nZByXp0DQvVjxLn3vS",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 1,
+          "errorType": "",
+          "message": "The model with the provided ID exists and we successfully retrieved its normalized node IRI plus name and creation timestamp. Next we need to inspect the choreography elements and control-flow patterns inside this specific model to suggest concrete improvements.",
+          "decision": "retry",
+          "reason": "We have identified the target model; we now need to explore its choreography structure (tasks, gateways, events, sequence flows) to detect common improvement opportunities like dead ends, missing gateways, or excessive parallelism. This requires additional targeted queries within the model context.",
+          "confidence": 0.78
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6409,
+          "outputTokens": 501,
+          "totalTokens": 6910
+        },
+        "durationMs": 3344,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_psMRP4mSs7eWQ8nspjcdQae5",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_psMRP4mSs7eWQ8nspjcdQae5",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 103,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?choreo ?chName (COUNT(DISTINCT ?task) AS ?taskCount) (COUNT(DISTINCT ?gw) AS ?gatewayCount) (COUNT(DISTINCT ?evt) AS ?eventCount) (COUNT(DISTINCT ?flow) AS ?sequenceFlowCount)\nWHERE {\n  ?model a bboExt:Model .\n  FILTER(STR(?model) = \"https://www.teamingai-project.eu/kg/model/sid_2258986a_c790_4708_ae4e_8dc02b7d122d\")\n  ?choreo tai:belongsTo ?defs .\n  ?defs tai:belongsTo ?model .\n  OPTIONAL { ?choreo bbo:name ?chName . }\n\n  OPTIONAL { ?task a bboExt:ChoreographyTask . ?task tai:belongsTo ?choreo . }\n  OPTIONAL { ?gw a ?gwType . FILTER(?gwType IN (bboExt:ExclusiveGateway, bboExt:ParallelGateway, bboExt:EventBasedGateway)) . ?gw tai:belongsTo ?choreo . }\n  OPTIONAL { ?evt a ?evtType . FILTER(?evtType IN (bboExt:StartEvent, bboExt:IntermediateCatchEvent, bboExt:EndEvent)) . ?evt tai:belongsTo ?choreo . }\n  OPTIONAL { ?edge a bbo:SequenceFlow . ?edge tai:belongsTo ?choreo . ?edge bbo:has_sourceRef ?s . ?edge bbo:has_targetRef ?t . ?s tai:belongsTo ?choreo . ?t tai:belongsTo ?choreo . }\n}\nGROUP BY ?choreo ?chName\nORDER BY DESC(?sequenceFlowCount)\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 2
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7108,
+          "outputTokens": 188,
+          "totalTokens": 7296
+        },
+        "durationMs": 2508,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_dbXm12Mu5XeY5sW2bisuPBKv",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_dbXm12Mu5XeY5sW2bisuPBKv",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 2,
+          "errorType": "",
+          "message": "This model contains two choreography diagrams: one with no tasks/gateways/events/sequence flows, and one with 3 tasks, 1 gateway, and 2 events. The sequenceFlowCount came back as 0 for the main choreography, so we should inspect how control flow is represented (e.g., missing bbo:SequenceFlow edges, or different container linkage) before proposing improvements.",
+          "decision": "retry",
+          "reason": "To suggest concrete improvements, we must inspect the actual elements and their connections inside the main choreography (tasks, gateway direction/default, event types, and any flows/edges). We will run a targeted exploration query to list tasks and related gateway/event nodes plus their names and ids, filtered to the main choreography.",
+          "confidence": 0.73
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7313,
+          "outputTokens": 351,
+          "totalTokens": 7664
+        },
+        "durationMs": 2205,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_hA2XGA1JVNRcy2UC00F9AoKH",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_hA2XGA1JVNRcy2UC00F9AoKH",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 11,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?choreo ?elem ?type ?name ?id\nWHERE {\n  ?model a bboExt:Model .\n  FILTER(STR(?model) = \"https://www.teamingai-project.eu/kg/model/sid_2258986a_c790_4708_ae4e_8dc02b7d122d\")\n\n  ?choreo tai:belongsTo ?defs .\n  ?defs tai:belongsTo ?model .\n\n  ?elem tai:belongsTo ?choreo .\n  ?elem a ?type .\n  FILTER(\n    ?type IN (bboExt:ChoreographyTask, bboExt:ExclusiveGateway, bboExt:ParallelGateway, bboExt:EventBasedGateway,\n             bboExt:StartEvent, bboExt:IntermediateCatchEvent, bboExt:EndEvent)\n  )\n  OPTIONAL { ?elem bbo:name ?name . }\n  OPTIONAL { ?elem bbo:id ?id . }\n}\nORDER BY ?choreo ?type\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 6
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8389,
+          "outputTokens": 183,
+          "totalTokens": 8572
+        },
+        "durationMs": 1401,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_UPFYT31nn8oLfFx7WE9iw68d",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_UPFYT31nn8oLfFx7WE9iw68d",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 6,
+          "errorType": "",
+          "message": "We found the core elements in the main choreography: 3 tasks ('Schickt Antragsformular ab', 'Informieren über Zustimmung', 'Informieren über Ablehnung'), 1 exclusive gateway, and 1 end event plus 1 start event. Next we should inspect the sequence flow connections and the gateway properties (direction/default) to identify where improvements are possible (e.g., missing outgoing flows, unclear default, unreachable branches).",
+          "decision": "retry",
+          "reason": "Now that we know the relevant element IDs, we can run a targeted query to extract sequence flows (source->target) and gateway attributes (gatewayDirection/default). That will reveal control-flow structure to propose concrete BPMN improvements for this model.",
+          "confidence": 0.74
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8589,
+          "outputTokens": 471,
+          "totalTokens": 9060
+        },
+        "durationMs": 2805,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_ZO9VfMIT5lEwMA11VfU73PD8",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_ZO9VfMIT5lEwMA11VfU73PD8",
+        "parentCallId": "llm_0007",
+        "toolName": "sparql_query",
+        "durationMs": 8,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?edge ?src ?srcName ?tgt ?tgtName ?isImmediate\n       ?gwDir ?gwDefault ?gwInst\nWHERE {\n  ?model a bboExt:Model .\n  FILTER(STR(?model) = \"https://www.teamingai-project.eu/kg/model/sid_2258986a_c790_4708_ae4e_8dc02b7d122d\")\n\n  ?choreo tai:belongsTo ?defs .\n  ?defs tai:belongsTo ?model .\n\n  ?edge a bbo:SequenceFlow ;\n        bbo:has_sourceRef ?src ;\n        bbo:has_targetRef ?tgt .\n  ?src tai:belongsTo ?choreo .\n  ?tgt tai:belongsTo ?choreo .\n  OPTIONAL { ?edge bboExt:isImmediate ?isImmediate . }\n\n  OPTIONAL {\n    FILTER( EXISTS { ?src a bboExt:ExclusiveGateway } || EXISTS { ?src a bboExt:ParallelGateway } || EXISTS { ?src a bboExt:EventBasedGateway } )\n    ?src a ?gwType .\n    OPTIONAL { ?src bboExt:gatewayDirection ?gwDir . }\n    OPTIONAL { ?src bboExt:default ?gwDefault . }\n    OPTIONAL { ?src bboExt:instantiate ?gwInst . }\n  }\n\n  OPTIONAL { ?src bbo:name ?srcName . }\n  OPTIONAL { ?tgt bbo:name ?tgtName . }\n}\nORDER BY ?edge\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 6
+        },
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "llm_call",
+        "callId": "llm_0008",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10070,
+          "outputTokens": 153,
+          "totalTokens": 10223
+        },
+        "durationMs": 1291,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_lzomOQEjOeDGQhfFm6P2VYCX",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 15,
+        "kind": "tool_exec",
+        "toolCallId": "call_lzomOQEjOeDGQhfFm6P2VYCX",
+        "parentCallId": "llm_0008",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "rowCount": 6,
+          "errorType": "",
+          "message": "We now have the concrete control-flow edges in the main choreography (6 sequence flows) including the exclusive gateway direction and its default target. With this, we can derive improvement suggestions such as ensuring both gateway branches converge appropriately, verifying that the default points to the intended branch, and improving readability/labels on unnamed nodes.",
+          "decision": "finalize",
+          "reason": "We have enough specific evidence (task names, gateway direction/default, and exact source/target of sequence flows) to propose model improvements concretely. We will now provide targeted suggestions based on the discovered BPMN structure.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 16,
+        "kind": "llm_call",
+        "callId": "llm_0009",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10240,
+          "outputTokens": 632,
+          "totalTokens": 10872
+        },
+        "durationMs": 4690,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_Ct4IF22ueii59z6lfgsYvqII",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 17,
+        "kind": "tool_exec",
+        "toolCallId": "call_Ct4IF22ueii59z6lfgsYvqII",
+        "parentCallId": "llm_0009",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Here are concrete improvement suggestions for model **4ccc3fd711004f519782ac92e58f6ddd** (name: **“Aufgabe 1: 4 Augen-Prüfung”**):\n\n1) **Fix/clarify the XOR gateway “default”**\n- The exclusive gateway (type **ExclusiveGateway**) has **gatewayDirection = Diverging**.\n- Its **default** is set to **sid-87973F1F-DC71-4FC4-AB0C-1EC45459ED7C**.\n- However, that value corresponds to the **same gateway node IRI/id you’re selecting as “default”**, not to a target branch task/end. In BPMN, “default” should be the *ID of the outgoing sequence flow* (or otherwise unambiguously one outgoing path), so review the wiring and set the default to the correct outgoing path.\n\n2) **Name the gateway and the end event (readability + maintainability)**\n- The **StartEvent** and **ExclusiveGateway** are returned with **empty bbo:name**.\n- The **EndEvent** is also returned with **empty bbo:name**.\n- Add meaningful labels (e.g., “Start: Antrag eingehen”, “Entscheidung: Zustimmung/Ablehnung”, “Ende”) so the process is understandable without looking at diagram context.\n\n3) **Ensure both branches explicitly converge (current structure is close but verify semantics)**\n- Outgoing from the XOR gateway:\n  - Branch 1: **Informieren über Zustimmung** → **EndEvent**\n  - Branch 2: **Informieren über Ablehnung** → **EndEvent**\n- This is structurally fine (both reach the end), but since the gateway is unnamed and the “default” seems questionable, verify that the converging point is clearly indicated in the BPMN rendering and that the default branch matches the intended most-likely outcome.\n\n4) **Improve task naming consistency for “4-eyes” intent**\n- Tasks are:\n  - **“Schickt Antragsformular ab”**\n  - **“Informieren über Zustimmung”**\n  - **“Informieren über Ablehnung”**\n- Consider making the approval/review action explicit (e.g., “4-Augen Prüfung durchführen”, “Prüferstellung Zustimmung/Ablehnung erteilen”) so the choreography clearly communicates where the second reviewer/verifier is represented.\n\n5) **Check for missing flow label/condition information on the XOR branches**\n- You have the XOR split, but no conditions/labels were surfaced in the triples for the outgoing paths.\n- In BPMN, add branch conditions (or gateway documentation) indicating what constitutes **“Zustimmung” vs “Ablehnung”** (even if it’s textual via annotations), so the decision logic is explicit.\n"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 18,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-28T17:43:14.039Z",
+        "status": "OK",
+        "finalAnswer": "Here are concrete improvement suggestions for model **4ccc3fd711004f519782ac92e58f6ddd** (name: **“Aufgabe 1: 4 Augen-Prüfung”**):\n\n1) **Fix/clarify the XOR gateway “default”**\n- The exclusive gateway (type **ExclusiveGateway**) has **gatewayDirection = Diverging**.\n- Its **default** is set to **sid-87973F1F-DC71-4FC4-AB0C-1EC45459ED7C**.\n- However, that value corresponds to the **same gateway node IRI/id you’re selecting as “default”**, not to a target branch task/end. In BPMN, “default” should be the *ID of the outgoing sequence flow* (or otherwise unambiguously one outgoing path), so review the wiring and set the default to the correct outgoing path.\n\n2) **Name the gateway and the end event (readability + maintainability)**\n- The **StartEvent** and **ExclusiveGateway** are returned with **empty bbo:name**.\n- The **EndEvent** is also returned with **empty bbo:name**.\n- Add meaningful labels (e.g., “Start: Antrag eingehen”, “Entscheidung: Zustimmung/Ablehnung”, “Ende”) so the process is understandable without looking at diagram context.\n\n3) **Ensure both branches explicitly converge (current structure is close but verify semantics)**\n- Outgoing from the XOR gateway:\n  - Branch 1: **Informieren über Zustimmung** → **EndEvent**\n  - Branch 2: **Informieren über Ablehnung** → **EndEvent**\n- This is structurally fine (both reach the end), but since the gateway is unnamed and the “default” seems questionable, verify that the converging point is clearly indicated in the BPMN rendering and that the default branch matches the intended most-likely outcome.\n\n4) **Improve task naming consistency for “4-eyes” intent**\n- Tasks are:\n  - **“Schickt Antragsformular ab”**\n  - **“Informieren über Zustimmung”**\n  - **“Informieren über Ablehnung”**\n- Consider making the approval/review action explicit (e.g., “4-Augen Prüfung durchführen”, “Prüferstellung Zustimmung/Ablehnung erteilen”) so the choreography clearly communicates where the second reviewer/verifier is represented.\n\n5) **Check for missing flow label/condition information on the XOR branches**\n- You have the XOR split, but no conditions/labels were surfaced in the triples for the outgoing paths.\n- In BPMN, add branch conditions (or gateway documentation) indicating what constitutes **“Zustimmung” vs “Ablehnung”** (even if it’s textual via annotations), so the decision logic is explicit.\n",
+        "afterCallId": "llm_0009"
+      }
+    ],
+    "counts": {
+      "llmCalls": 9,
+      "toolExecs": 9
+    }
+  }
+}

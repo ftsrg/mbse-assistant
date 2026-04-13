@@ -1,0 +1,815 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q052",
+    "question": "Is there any cyclic behaviour in this model? (Model ID: 2d225c9ff86b443c9f6bc6cfe687afbc)",
+    "durationMs": 541295,
+    "status": "OK",
+    "finalAnswer": "Yes, there is cyclic behaviour in this model (Model ID: 2d225c9ff86b443c9f6bc6cfe687afbc, \"Choreographiediagramm (Kopie)\").\n\nI identified **7 tasks that are part of cyclic paths**:\n\n1. **\"Anzahl überprüfen\" (Check quantity)** - This task has a clear loop:\n   - Outgoing flow: \"i = i + 1\" → \"i = 3 ?\" gateway\n   - Incoming flow: \"nicht bestanden\" (not passed) from the quality control gateway\n   - This creates a retry loop for quality inspection attempts\n\n2. **\"Reklamation senden\" (Send complaint)** - Part of a larger cycle:\n   - \"Reklamation senden\" → gateway → \"Ursachen analysieren\" (analyze causes) → gateway → \"i = 3 ?\" gateway → \"Reklamation senden\"\n   - This is a complaint handling loop\n\n3. **\"Ursachen analysieren\" (Analyze causes)** - Connected to the complaint cycle:\n   - Outgoing to gateway → \"i = 3 ?\" gateway → \"Reklamation senden\" → gateway → \"Ursachen analysieren\"\n\n4. **\"Qualitätskontrolle durchführen\" (Perform quality control)** - Part of quality loop:\n   - Connected to \"Probe ausliefern\" (deliver sample) and \"Herstellungsprozess einleiten\" (initiate manufacturing process)\n\n5. **\"Probe ausliefern\" (Deliver sample)** - Connected to quality control:\n   - \"Probe ausliefern\" → \"Qualitätskontrolle durchführen\"\n\n6. **\"Herstellungsprozess einleiten\" (Initiate manufacturing process)** - Connected to quality control:\n   - \"Herstellungsprozess einleiten\" → \"Qualitätskontrolle durchführen\"\n\nThe main cycles are:\n- **Quality inspection retry loop**: \"Anzahl überprüfen\" ↔ \"i = 3 ?\" gateway (with \"nicht bestanden\" path)\n- **Complaint handling loop**: \"Reklamation senden\" → \"Ursachen analysieren\" → \"i = 3 ?\" → \"Reklamation senden\"\n- **Quality control loop**: \"Qualitätskontrolle durchführen\" ↔ \"Probe ausliefern\" / \"Herstellungsprozess einleiten\"",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 286030,
+      "outputTokens": 8442,
+      "totalTokens": 294472
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6273,
+          "outputTokens": 456,
+          "totalTokens": 6729
+        },
+        "durationMs": 24237,
+        "status": "OK",
+        "output": "I'll help you detect cyclic behaviour in the specified model. Let me first explore the model structure and then analyze the sequence flows for cycles.\n",
+        "plannedToolCalls": [
+          {
+            "id": "call_b8bee379edbd42179773edc1",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_b8bee379edbd42179773edc1",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 6,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?model ?modelName ?choreo ?choreoName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:normalizedId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  ?choreo bbo:name ?choreoName .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6567,
+          "outputTokens": 276,
+          "totalTokens": 6843
+        },
+        "durationMs": 39693,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_44edf699a9b44edcab08c84d",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_44edf699a9b44edcab08c84d",
+        "parentCallId": "llm_0002",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?model ?modelName ?origId ?normId WHERE {\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  OPTIONAL { ?model tai:originalId ?origId . }\n  OPTIONAL { ?model tai:normalizedId ?normId . }\n  FILTER(CONTAINS(STR(?normId), \"2d225c9ff86b443c9f6bc6cfe687afbc\") || CONTAINS(STR(?origId), \"2d225c9ff86b443c9f6bc6cfe687afbc\"))\n}\nLIMIT 10\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6961,
+          "outputTokens": 324,
+          "totalTokens": 7285
+        },
+        "durationMs": 15068,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_78035c4e0f7e48f6b73fe2ae",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_78035c4e0f7e48f6b73fe2ae",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 10,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?choreo ?choreoName (COUNT(DISTINCT ?task) AS ?taskCount) WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  ?choreo bbo:name ?choreoName .\n  OPTIONAL {\n    ?task a bboExt:ChoreographyTask .\n    ?task tai:belongsTo ?choreo .\n  }\n}\nGROUP BY ?choreo ?choreoName\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7258,
+          "outputTokens": 209,
+          "totalTokens": 7467
+        },
+        "durationMs": 12466,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_b749386a887d4ffea6a92c95",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_b749386a887d4ffea6a92c95",
+        "parentCallId": "llm_0004",
+        "toolName": "sparql_query",
+        "durationMs": 5,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?type (COUNT(*) as ?count) WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?elem tai:belongsTo ?model .\n  ?elem a ?type .\n}\nGROUP BY ?type\nORDER BY DESC(?count)\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7490,
+          "outputTokens": 211,
+          "totalTokens": 7701
+        },
+        "durationMs": 18588,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_48f3a5c6d7524f53819f631f",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_48f3a5c6d7524f53819f631f",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?elem ?name ?type WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?elem tai:belongsTo ?defs .\n  ?elem a ?type .\n  OPTIONAL { ?elem bbo:name ?name . }\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 10
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8399,
+          "outputTokens": 264,
+          "totalTokens": 8663
+        },
+        "durationMs": 14848,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_dca7337808f54e058e71427b",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_dca7337808f54e058e71427b",
+        "parentCallId": "llm_0006",
+        "toolName": "sparql_query",
+        "durationMs": 10,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?elem ?name ?type WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  ?elem tai:belongsTo ?choreo .\n  ?elem a ?type .\n  OPTIONAL { ?elem bbo:name ?name . }\n}\nLIMIT 100\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 100
+        },
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9991,
+          "outputTokens": 343,
+          "totalTokens": 10334
+        },
+        "durationMs": 25147,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_e932e1a8b12644e88bd7cfef",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_e932e1a8b12644e88bd7cfef",
+        "parentCallId": "llm_0007",
+        "toolName": "sparql_query",
+        "durationMs": 12,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flow ?flowName ?source ?sourceName ?target ?targetName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  ?flow a bbo:SequenceFlow .\n  ?flow tai:belongsTo ?choreo .\n  OPTIONAL { ?flow bbo:name ?flowName . }\n  \n  ?flow bbo:has_sourceRef ?source .\n  ?flow bbo:has_targetRef ?target .\n  \n  OPTIONAL { ?source bbo:name ?sourceName . }\n  OPTIONAL { ?target bbo:name ?targetName . }\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 34
+        },
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "llm_call",
+        "callId": "llm_0008",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 13295,
+          "outputTokens": 469,
+          "totalTokens": 13764
+        },
+        "durationMs": 26281,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_22657bd855f346b6ae17b2bd",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 15,
+        "kind": "tool_exec",
+        "toolCallId": "call_22657bd855f346b6ae17b2bd",
+        "parentCallId": "llm_0008",
+        "toolName": "sparql_query",
+        "durationMs": 12,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?node ?nodeName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  ?node a bboExt:ChoreographyTask .\n  ?node tai:belongsTo ?choreo .\n  ?node bbo:name ?nodeName .\n  \n  # Find if node can reach itself through sequence flows (cycle)\n  ?node ((^bbo:has_sourceRef)/bbo:has_targetRef)+ ?node .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 7
+        },
+        "error": null
+      },
+      {
+        "seq": 16,
+        "kind": "llm_call",
+        "callId": "llm_0009",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 13953,
+          "outputTokens": 335,
+          "totalTokens": 14288
+        },
+        "durationMs": 27453,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_d698449aec5e48e2be74c1ad",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 17,
+        "kind": "tool_exec",
+        "toolCallId": "call_d698449aec5e48e2be74c1ad",
+        "parentCallId": "llm_0009",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?targetName ?flowName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  # Find the specific flow that creates the cycle for \"Anzahl überprüfen\"\n  ?source bbo:name \"Anzahl überprüfen\" .\n  ?source tai:belongsTo ?choreo .\n  \n  ?flow a bbo:SequenceFlow .\n  ?flow bbo:has_sourceRef ?source .\n  ?flow bbo:has_targetRef ?target .\n  ?target bbo:name ?targetName .\n  OPTIONAL { ?flow bbo:name ?flowName . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 18,
+        "kind": "llm_call",
+        "callId": "llm_0010",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 14313,
+          "outputTokens": 343,
+          "totalTokens": 14656
+        },
+        "durationMs": 21847,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_7de47d8f6edf4a6bbd93060e",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 19,
+        "kind": "tool_exec",
+        "toolCallId": "call_7de47d8f6edf4a6bbd93060e",
+        "parentCallId": "llm_0010",
+        "toolName": "sparql_query",
+        "durationMs": 7,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?targetName ?flowName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  # Find flows that lead back to source (creating cycles)\n  ?source bbo:name \"Anzahl überprüfen\" .\n  ?source tai:belongsTo ?choreo .\n  \n  ?flow a bbo:SequenceFlow .\n  ?flow bbo:has_targetRef ?source .\n  ?flow bbo:has_sourceRef ?target .\n  ?target bbo:name ?targetName .\n  OPTIONAL { ?flow bbo:name ?flowName . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 20,
+        "kind": "llm_call",
+        "callId": "llm_0011",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 14661,
+          "outputTokens": 463,
+          "totalTokens": 15124
+        },
+        "durationMs": 26831,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_eb5daf9a07d14d2ba1df7353",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 21,
+        "kind": "tool_exec",
+        "toolCallId": "call_eb5daf9a07d14d2ba1df7353",
+        "parentCallId": "llm_0011",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?nodeName (GROUP_CONCAT(?cycleInfo; SEPARATOR=\" | \") AS ?cycleDetails) WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  ?node a bboExt:ChoreographyTask .\n  ?node tai:belongsTo ?choreo .\n  ?node bbo:name ?nodeName .\n  \n  # Find if node can reach itself through sequence flows (cycle)\n  ?node ((^bbo:has_sourceRef)/bbo:has_targetRef)+ ?node .\n  \n  # Get the incoming and outgoing flows for context\n  OPTIONAL {\n    ?outFlow a bbo:SequenceFlow .\n    ?outFlow bbo:has_sourceRef ?node .\n    ?outFlow bbo:has_targetRef ?outTarget .\n    ?outTarget bbo:name ?outTargetName .\n    BIND(CONCAT(\"OUT: \", ?outTargetName) AS ?cycleInfo)\n  }\n}\nGROUP BY ?nodeName\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 6
+        },
+        "error": null
+      },
+      {
+        "seq": 22,
+        "kind": "llm_call",
+        "callId": "llm_0012",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 15196,
+          "outputTokens": 518,
+          "totalTokens": 15714
+        },
+        "durationMs": 24473,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_aed6877478964ca4ba604f07",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 23,
+        "kind": "tool_exec",
+        "toolCallId": "call_aed6877478964ca4ba604f07",
+        "parentCallId": "llm_0012",
+        "toolName": "sparql_query",
+        "durationMs": 12,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?targetName ?flowName ?sourceType ?targetType WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  # Get all sequence flows in the choreography\n  ?flow a bbo:SequenceFlow .\n  ?flow tai:belongsTo ?choreo .\n  OPTIONAL { ?flow bbo:name ?flowName . }\n  \n  ?flow bbo:has_sourceRef ?source .\n  ?flow bbo:has_targetRef ?target .\n  ?source a ?sourceType .\n  ?target a ?targetType .\n  OPTIONAL { ?source bbo:name ?sourceName . }\n  OPTIONAL { ?target bbo:name ?targetName . }\n  \n  # Focus on flows related to the cyclic tasks\n  FILTER(?sourceName IN (\"Anzahl überprüfen\", \"Probe ausliefern\", \"Qualitätskontrolle durchführen\", \n                         \"Herstellungsprozess einleiten\", \"Ursachen analysieren\", \"Reklamation senden\") ||\n         ?targetName IN (\"Anzahl überprüfen\", \"Probe ausliefern\", \"Qualitätskontrolle durchführen\",\n                         \"Herstellungsprozess einleiten\", \"Ursachen analysieren\", \"Reklamation senden\"))\n}\nORDER BY ?sourceName\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 12
+        },
+        "error": null
+      },
+      {
+        "seq": 24,
+        "kind": "llm_call",
+        "callId": "llm_0013",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 16485,
+          "outputTokens": 751,
+          "totalTokens": 17236
+        },
+        "durationMs": 55511,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_9ffa6f5384d64a2d8f55af0e",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 25,
+        "kind": "tool_exec",
+        "toolCallId": "call_9ffa6f5384d64a2d8f55af0e",
+        "parentCallId": "llm_0013",
+        "toolName": "sparql_query",
+        "durationMs": 6,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?targetName ?flowName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  # Find flows where target is \"Reklamation senden\"\n  ?target bbo:name \"Reklamation senden\" .\n  ?target tai:belongsTo ?choreo .\n  \n  ?flow a bbo:SequenceFlow .\n  ?flow bbo:has_targetRef ?target .\n  ?flow bbo:has_sourceRef ?source .\n  ?source bbo:name ?sourceName .\n  OPTIONAL { ?flow bbo:name ?flowName . }\n}\nLIMIT 10\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 26,
+        "kind": "llm_call",
+        "callId": "llm_0014",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 16839,
+          "outputTokens": 330,
+          "totalTokens": 17169
+        },
+        "durationMs": 22820,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_06c950fedb194cc089e317f5",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 27,
+        "kind": "tool_exec",
+        "toolCallId": "call_06c950fedb194cc089e317f5",
+        "parentCallId": "llm_0014",
+        "toolName": "sparql_query",
+        "durationMs": 5,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?targetName ?flowName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  # Find flows where source is \"Reklamation senden\"\n  ?source bbo:name \"Reklamation senden\" .\n  ?source tai:belongsTo ?choreo .\n  \n  ?flow a bbo:SequenceFlow .\n  ?flow bbo:has_sourceRef ?source .\n  ?flow bbo:has_targetRef ?target .\n  ?target bbo:name ?targetName .\n  OPTIONAL { ?flow bbo:name ?flowName . }\n}\nLIMIT 10\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 28,
+        "kind": "llm_call",
+        "callId": "llm_0015",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 17192,
+          "outputTokens": 347,
+          "totalTokens": 17539
+        },
+        "durationMs": 14953,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_afffbd5f929e426098e4c8a9",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 29,
+        "kind": "tool_exec",
+        "toolCallId": "call_afffbd5f929e426098e4c8a9",
+        "parentCallId": "llm_0015",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?targetName ?flowName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  # Find flows from the gateway that \"Reklamation senden\" points to\n  ?reklTask bbo:name \"Reklamation senden\" .\n  ?reklTask tai:belongsTo ?choreo .\n  \n  ?flow a bbo:SequenceFlow .\n  ?flow bbo:has_sourceRef ?reklTask .\n  ?flow bbo:has_targetRef ?target .\n  ?target bbo:name ?targetName .\n  OPTIONAL { ?flow bbo:name ?flowName . }\n}\nLIMIT 10\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 30,
+        "kind": "llm_call",
+        "callId": "llm_0016",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 17555,
+          "outputTokens": 340,
+          "totalTokens": 17895
+        },
+        "durationMs": 19700,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_517dced4b7254511b011c664",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 31,
+        "kind": "tool_exec",
+        "toolCallId": "call_517dced4b7254511b011c664",
+        "parentCallId": "llm_0016",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?targetName ?flowName ?targetType WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  # Find flows from the gateway that \"Reklamation senden\" points to\n  ?reklTask bbo:name \"Reklamation senden\" .\n  ?reklTask tai:belongsTo ?choreo .\n  \n  ?flow a bbo:SequenceFlow .\n  ?flow bbo:has_sourceRef ?reklTask .\n  ?flow bbo:has_targetRef ?target .\n  ?target a ?targetType .\n  OPTIONAL { ?target bbo:name ?targetName . }\n  OPTIONAL { ?flow bbo:name ?flowName . }\n}\nLIMIT 10\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 32,
+        "kind": "llm_call",
+        "callId": "llm_0017",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 17957,
+          "outputTokens": 391,
+          "totalTokens": 18348
+        },
+        "durationMs": 21572,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_fdc26b69aea34795841844cc",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 33,
+        "kind": "tool_exec",
+        "toolCallId": "call_fdc26b69aea34795841844cc",
+        "parentCallId": "llm_0017",
+        "toolName": "sparql_query",
+        "durationMs": 6,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?targetName ?flowName ?sourceType WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  # Find flows from the gateway that \"Reklamation senden\" points to\n  ?reklTask bbo:name \"Reklamation senden\" .\n  ?reklTask tai:belongsTo ?choreo .\n  \n  ?flow1 a bbo:SequenceFlow .\n  ?flow1 bbo:has_sourceRef ?reklTask .\n  ?flow1 bbo:has_targetRef ?gw .\n  ?gw a ?sourceType .\n  \n  # Now find outgoing flows from that gateway\n  ?flow2 a bbo:SequenceFlow .\n  ?flow2 bbo:has_sourceRef ?gw .\n  ?flow2 bbo:has_targetRef ?target .\n  ?target bbo:name ?targetName .\n  OPTIONAL { ?flow2 bbo:name ?flowName . }\n}\nLIMIT 10\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 34,
+        "kind": "llm_call",
+        "callId": "llm_0018",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 18406,
+          "outputTokens": 430,
+          "totalTokens": 18836
+        },
+        "durationMs": 29110,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_45ca272f9e0d4063a5689885",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 35,
+        "kind": "tool_exec",
+        "toolCallId": "call_45ca272f9e0d4063a5689885",
+        "parentCallId": "llm_0018",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?targetName ?flowName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  # Find flows from \"Ursachen analysieren\"\n  ?source bbo:name \"Ursachen analysieren\" .\n  ?source tai:belongsTo ?choreo .\n  \n  ?flow a bbo:SequenceFlow .\n  ?flow bbo:has_sourceRef ?source .\n  ?flow bbo:has_targetRef ?target .\n  ?target bbo:name ?targetName .\n  OPTIONAL { ?flow bbo:name ?flowName . }\n}\nLIMIT 10\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 36,
+        "kind": "llm_call",
+        "callId": "llm_0019",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 18754,
+          "outputTokens": 469,
+          "totalTokens": 19223
+        },
+        "durationMs": 32305,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_0b3b7eaf856440d389d325da",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 37,
+        "kind": "tool_exec",
+        "toolCallId": "call_0b3b7eaf856440d389d325da",
+        "parentCallId": "llm_0019",
+        "toolName": "sparql_query",
+        "durationMs": 6,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?targetName ?flowName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"2d225c9ff86b443c9f6bc6cfe687afbc\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  # Find flows from \"i = 3 ?\" gateway to \"Reklamation senden\"\n  ?source bbo:name \"i = 3 ?\" .\n  ?source tai:belongsTo ?choreo .\n  \n  ?flow a bbo:SequenceFlow .\n  ?flow bbo:has_sourceRef ?source .\n  ?flow bbo:has_targetRef ?target .\n  ?target bbo:name ?targetName .\n  OPTIONAL { ?flow bbo:name ?flowName . }\n}\nLIMIT 10\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 2
+        },
+        "error": null
+      },
+      {
+        "seq": 38,
+        "kind": "llm_call",
+        "callId": "llm_0020",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 19136,
+          "outputTokens": 602,
+          "totalTokens": 19738
+        },
+        "durationMs": 46447,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_e7eea4032a8840688f39561a",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 39,
+        "kind": "tool_exec",
+        "toolCallId": "call_e7eea4032a8840688f39561a",
+        "parentCallId": "llm_0020",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 7,
+          "decision": "finalize",
+          "reason": "Found 7 tasks that are part of cyclic paths in the model. The analysis reveals multiple cycles: (1) \"Anzahl überprüfen\" loop with \"i = i + 1\" and \"nicht bestanden\" flows, (2) \"Reklamation senden\" cycle through \"Ursachen analysieren\" and \"i = 3 ?\" gateway, and (3) quality control loop between \"Qualitätskontrolle durchführen\", \"Probe ausliefern\", and \"Herstellungsprozess einleiten\".",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 40,
+        "kind": "llm_call",
+        "callId": "llm_0021",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 19349,
+          "outputTokens": 571,
+          "totalTokens": 19920
+        },
+        "durationMs": 21690,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_916eb8a0e1ee413590e0fd93",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 41,
+        "kind": "tool_exec",
+        "toolCallId": "call_916eb8a0e1ee413590e0fd93",
+        "parentCallId": "llm_0021",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Yes, there is cyclic behaviour in this model (Model ID: 2d225c9ff86b443c9f6bc6cfe687afbc, \"Choreographiediagramm (Kopie)\").\n\nI identified **7 tasks that are part of cyclic paths**:\n\n1. **\"Anzahl überprüfen\" (Check quantity)** - This task has a clear loop:\n   - Outgoing flow: \"i = i + 1\" → \"i = 3 ?\" gateway\n   - Incoming flow: \"nicht bestanden\" (not passed) from the quality control gateway\n   - This creates a retry loop for quality inspection attempts\n\n2. **\"Reklamation senden\" (Send complaint)** - Part of a larger cycle:\n   - \"Reklamation senden\" → gateway → \"Ursachen analysieren\" (analyze causes) → gateway → \"i = 3 ?\" gateway → \"Reklamation senden\"\n   - This is a complaint handling loop\n\n3. **\"Ursachen analysieren\" (Analyze causes)** - Connected to the complaint cycle:\n   - Outgoing to gateway → \"i = 3 ?\" gateway → \"Reklamation senden\" → gateway → \"Ursachen analysieren\"\n\n4. **\"Qualitätskontrolle durchführen\" (Perform quality control)** - Part of quality loop:\n   - Connected to \"Probe ausliefern\" (deliver sample) and \"Herstellungsprozess einleiten\" (initiate manufacturing process)\n\n5. **\"Probe ausliefern\" (Deliver sample)** - Connected to quality control:\n   - \"Probe ausliefern\" → \"Qualitätskontrolle durchführen\"\n\n6. **\"Herstellungsprozess einleiten\" (Initiate manufacturing process)** - Connected to quality control:\n   - \"Herstellungsprozess einleiten\" → \"Qualitätskontrolle durchführen\"\n\nThe main cycles are:\n- **Quality inspection retry loop**: \"Anzahl überprüfen\" ↔ \"i = 3 ?\" gateway (with \"nicht bestanden\" path)\n- **Complaint handling loop**: \"Reklamation senden\" → \"Ursachen analysieren\" → \"i = 3 ?\" → \"Reklamation senden\"\n- **Quality control loop**: \"Qualitätskontrolle durchführen\" ↔ \"Probe ausliefern\" / \"Herstellungsprozess einleiten\""
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 42,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T15:14:43.979Z",
+        "status": "OK",
+        "finalAnswer": "Yes, there is cyclic behaviour in this model (Model ID: 2d225c9ff86b443c9f6bc6cfe687afbc, \"Choreographiediagramm (Kopie)\").\n\nI identified **7 tasks that are part of cyclic paths**:\n\n1. **\"Anzahl überprüfen\" (Check quantity)** - This task has a clear loop:\n   - Outgoing flow: \"i = i + 1\" → \"i = 3 ?\" gateway\n   - Incoming flow: \"nicht bestanden\" (not passed) from the quality control gateway\n   - This creates a retry loop for quality inspection attempts\n\n2. **\"Reklamation senden\" (Send complaint)** - Part of a larger cycle:\n   - \"Reklamation senden\" → gateway → \"Ursachen analysieren\" (analyze causes) → gateway → \"i = 3 ?\" gateway → \"Reklamation senden\"\n   - This is a complaint handling loop\n\n3. **\"Ursachen analysieren\" (Analyze causes)** - Connected to the complaint cycle:\n   - Outgoing to gateway → \"i = 3 ?\" gateway → \"Reklamation senden\" → gateway → \"Ursachen analysieren\"\n\n4. **\"Qualitätskontrolle durchführen\" (Perform quality control)** - Part of quality loop:\n   - Connected to \"Probe ausliefern\" (deliver sample) and \"Herstellungsprozess einleiten\" (initiate manufacturing process)\n\n5. **\"Probe ausliefern\" (Deliver sample)** - Connected to quality control:\n   - \"Probe ausliefern\" → \"Qualitätskontrolle durchführen\"\n\n6. **\"Herstellungsprozess einleiten\" (Initiate manufacturing process)** - Connected to quality control:\n   - \"Herstellungsprozess einleiten\" → \"Qualitätskontrolle durchführen\"\n\nThe main cycles are:\n- **Quality inspection retry loop**: \"Anzahl überprüfen\" ↔ \"i = 3 ?\" gateway (with \"nicht bestanden\" path)\n- **Complaint handling loop**: \"Reklamation senden\" → \"Ursachen analysieren\" → \"i = 3 ?\" → \"Reklamation senden\"\n- **Quality control loop**: \"Qualitätskontrolle durchführen\" ↔ \"Probe ausliefern\" / \"Herstellungsprozess einleiten\"",
+        "afterCallId": "llm_0021"
+      }
+    ],
+    "counts": {
+      "llmCalls": 21,
+      "toolExecs": 21
+    }
+  }
+}

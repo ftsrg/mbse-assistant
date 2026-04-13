@@ -1,0 +1,261 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q149",
+    "question": "Which organizations have models about universities?",
+    "durationMs": 18225,
+    "status": "OK",
+    "finalAnswer": "Two organizations have models containing \"University\" participants:\n\n1. **Org92** - Model: \"A2 Section 1 choreo\"\n2. **Org97** - Model: \"choreo\"\n\nThese organizations own BPMN choreography models where \"University\" is defined as a participant role.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 51813,
+      "outputTokens": 1149,
+      "totalTokens": 52962
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6620,
+          "outputTokens": 267,
+          "totalTokens": 6887
+        },
+        "durationMs": 4997,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_f11b86229db947babd284f85",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_f11b86229db947babd284f85",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 28,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?elem ?name ?type ?comment WHERE {\n  ?elem bbo:name ?name .\n  FILTER(CONTAINS(LCASE(STR(?name)), LCASE(\"university\")))\n  ?elem a ?type .\n  OPTIONAL { ?elem rdfs:comment ?comment . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 22
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8608,
+          "outputTokens": 213,
+          "totalTokens": 8821
+        },
+        "durationMs": 3506,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_80ecaaa052b142e4878d8795",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_80ecaaa052b142e4878d8795",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 5,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 22,
+          "decision": "retry",
+          "reason": "Found 22 participants named \"University\" (type bboExt:Participant). Now need to trace the containment hierarchy to find which organizations own the models containing these participants. Will explore the tai:belongsTo relationships.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8763,
+          "outputTokens": 324,
+          "totalTokens": 9087
+        },
+        "durationMs": 3816,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_4a9a425a119c4277aec03837",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_4a9a425a119c4277aec03837",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 18,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?orgName ?modelName ?choreoName WHERE {\n  ?participant a bboExt:Participant .\n  ?participant bbo:name \"University\" .\n  ?participant tai:belongsTo ?choreo .\n  ?choreo a bboExt:Choreography .\n  OPTIONAL { ?choreo bbo:name ?choreoName . }\n  ?choreo tai:belongsTo ?definitions .\n  ?definitions a bboExt:Definitions .\n  ?definitions tai:belongsTo ?model .\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  ?org a bboExt:Organization .\n  ?org rdfs:label ?orgName .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 2
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9128,
+          "outputTokens": 143,
+          "totalTokens": 9271
+        },
+        "durationMs": 2449,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_140f8b28efb549e0b9cb2554",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_140f8b28efb549e0b9cb2554",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 2,
+          "decision": "finalize",
+          "reason": "Found 2 organizations with models containing \"University\" participants: Org92 (model \"A2 Section 1 choreo\") and Org97 (model \"choreo\"). This answers the user's question about which organizations have models about universities.",
+          "confidence": 0.9
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9290,
+          "outputTokens": 107,
+          "totalTokens": 9397
+        },
+        "durationMs": 1727,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_1c053f5eb232473bb2c08e5b",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_1c053f5eb232473bb2c08e5b",
+        "parentCallId": "llm_0005",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "decision": "finalize",
+          "reason": "Finalizing the answer with the 2 organizations found that have models containing University participants.",
+          "confidence": 0.9
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9404,
+          "outputTokens": 95,
+          "totalTokens": 9499
+        },
+        "durationMs": 1631,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_3814f6354b9446899ec958f2",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_3814f6354b9446899ec958f2",
+        "parentCallId": "llm_0006",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Two organizations have models containing \"University\" participants:\n\n1. **Org92** - Model: \"A2 Section 1 choreo\"\n2. **Org97** - Model: \"choreo\"\n\nThese organizations own BPMN choreography models where \"University\" is defined as a participant role."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T10:23:20.568Z",
+        "status": "OK",
+        "finalAnswer": "Two organizations have models containing \"University\" participants:\n\n1. **Org92** - Model: \"A2 Section 1 choreo\"\n2. **Org97** - Model: \"choreo\"\n\nThese organizations own BPMN choreography models where \"University\" is defined as a participant role.",
+        "afterCallId": "llm_0006"
+      }
+    ],
+    "counts": {
+      "llmCalls": 6,
+      "toolExecs": 6
+    }
+  }
+}

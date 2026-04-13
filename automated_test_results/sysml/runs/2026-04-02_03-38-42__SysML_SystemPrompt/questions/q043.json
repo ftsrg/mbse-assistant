@@ -1,0 +1,412 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q043",
+    "question": "Are there packages labled as obsolete or to be removed in the requirments hierarchy?",
+    "durationMs": 140475,
+    "status": "OK",
+    "finalAnswer": "Yes, there are 2 packages in the requirements hierarchy labeled as obsolete or to be removed:\n\n1. **\"03b OLD: proposed requirements (to be replaced with DOORS imported ones)\"** - Located in: TMT::Project::Work Packages::Telescope::WorkPackages::Control::Alignment and Phasing System::Systems Engineering::01 Components::Operational::APS::Black Box Specification::Requirements\n\n2. **\"01a Parent Requirements (OLD: to be removed once they no longer have links down to APS requirements)\"** - Located in: TMT::Project::Work Packages::Telescope::WorkPackages::Control::Alignment and Phasing System::Systems Engineering::01 Components::Operational::APS::Black Box Specification::Requirements\n\nBoth packages are within the APS (Alignment and Phasing System) requirements hierarchy and are marked with \"OLD\" or \"to be removed\" labels indicating they are planned for removal or replacement.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 137029,
+      "outputTokens": 2825,
+      "totalTokens": 139854
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9608,
+          "outputTokens": 398,
+          "totalTokens": 10006
+        },
+        "durationMs": 15182,
+        "status": "OK",
+        "output": "I'll help you find packages labeled as obsolete or to be removed in the requirements hierarchy. Let me start by exploring the model to understand its structure.\n",
+        "plannedToolCalls": [
+          {
+            "id": "call_dd0a2c528f204c8bbf898981",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_dd0a2c528f204c8bbf898981",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 10,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT ?pkg ?name ?type WHERE {\n  ?pkg rdf:type vocab:package .\n  ?pkg vocab:NamedElement_name ?name .\n  ?pkg rdf:type ?type .\n}\nLIMIT 30\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 30
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 11591,
+          "outputTokens": 186,
+          "totalTokens": 11777
+        },
+        "durationMs": 7608,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_93c60e9db38143ea8d4844aa",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_93c60e9db38143ea8d4844aa",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 30,
+          "decision": "retry",
+          "reason": "Found initial packages. Need to search more specifically for packages with \"obsolete\", \"deprecated\", \"to be removed\" or similar labels in their names within the requirements hierarchy.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 11724,
+          "outputTokens": 261,
+          "totalTokens": 11985
+        },
+        "durationMs": 12161,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_5bf25e1952284b2d8e354d08",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_5bf25e1952284b2d8e354d08",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 15,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT ?pkg ?name WHERE {\n  ?pkg rdf:type vocab:package .\n  ?pkg vocab:NamedElement_name ?name .\n  FILTER(CONTAINS(LCASE(STR(?name)), LCASE(\"obsolete\")) \n       || CONTAINS(LCASE(STR(?name)), LCASE(\"deprecated\"))\n       || CONTAINS(LCASE(STR(?name)), LCASE(\"to be removed\"))\n       || CONTAINS(LCASE(STR(?name)), LCASE(\"old\"))\n       || CONTAINS(LCASE(STR(?name)), LCASE(\"remove\")))\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 16
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 13464,
+          "outputTokens": 310,
+          "totalTokens": 13774
+        },
+        "durationMs": 14917,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_c55c7e9baab04fd18911c9fc",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_c55c7e9baab04fd18911c9fc",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 16,
+          "decision": "retry",
+          "reason": "Found packages with obsolete/deprecated labels. Need to filter specifically for those in the requirements hierarchy and verify which are actually requirement packages.",
+          "confidence": 0.85
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 13588,
+          "outputTokens": 396,
+          "totalTokens": 13984
+        },
+        "durationMs": 31054,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_96d8cb14fd654c2f9a4b7e6b",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_96d8cb14fd654c2f9a4b7e6b",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 14,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT ?pkg ?name WHERE {\n  ?pkg rdf:type vocab:package .\n  ?pkg vocab:NamedElement_name ?name .\n  FILTER(CONTAINS(LCASE(STR(?name)), LCASE(\"Requirements\")))\n  FILTER(CONTAINS(LCASE(STR(?name)), LCASE(\"obsolete\")) \n       || CONTAINS(LCASE(STR(?name)), LCASE(\"deprecated\"))\n       || CONTAINS(LCASE(STR(?name)), LCASE(\"to be removed\"))\n       || CONTAINS(LCASE(STR(?name)), LCASE(\"OLD:\")))\n}\nLIMIT 30\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 2
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 14200,
+          "outputTokens": 181,
+          "totalTokens": 14381
+        },
+        "durationMs": 5302,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_fed9528d10dd4d7ea88a2a90",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_fed9528d10dd4d7ea88a2a90",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 2,
+          "decision": "retry",
+          "reason": "Found 2 requirement packages marked as obsolete/to be removed. Let me also check for any requirements inside these packages and verify they are in the requirements hierarchy.",
+          "confidence": 0.9
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 14329,
+          "outputTokens": 268,
+          "totalTokens": 14597
+        },
+        "durationMs": 7310,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_dfaf31f8ca9a4b9b848d8323",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_dfaf31f8ca9a4b9b848d8323",
+        "parentCallId": "llm_0007",
+        "toolName": "sparql_query",
+        "durationMs": 14,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT ?pkg ?name ?type WHERE {\n  ?pkg rdf:type vocab:package .\n  ?pkg vocab:NamedElement_name ?name .\n  ?pkg rdf:type ?type .\n  FILTER(CONTAINS(LCASE(STR(?name)), LCASE(\"requirement\")) || CONTAINS(LCASE(STR(?name)), LCASE(\"Requirement\")))\n  FILTER(CONTAINS(LCASE(STR(?name)), LCASE(\"OLD\")) || CONTAINS(LCASE(STR(?name)), LCASE(\"obsolete\")) || CONTAINS(LCASE(STR(?name)), LCASE(\"deprecated\")) || CONTAINS(LCASE(STR(?name)), LCASE(\"to be removed\")))\n}\nLIMIT 30\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 2
+        },
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "llm_call",
+        "callId": "llm_0008",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 14999,
+          "outputTokens": 215,
+          "totalTokens": 15214
+        },
+        "durationMs": 9096,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_4fa617034e0747cb9d0b2c3f",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 15,
+        "kind": "tool_exec",
+        "toolCallId": "call_4fa617034e0747cb9d0b2c3f",
+        "parentCallId": "llm_0008",
+        "toolName": "sparql_query",
+        "durationMs": 13,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT ?pkg ?name WHERE {\n  ?pkg rdf:type vocab:package .\n  ?pkg vocab:NamedElement_name ?name .\n  FILTER(CONTAINS(LCASE(STR(?name)), LCASE(\"deprecated\")) \n       || CONTAINS(LCASE(STR(?name)), LCASE(\"OBSOLETE\"))\n       || CONTAINS(LCASE(STR(?name)), LCASE(\"OLD\")))\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 16
+        },
+        "error": null
+      },
+      {
+        "seq": 16,
+        "kind": "llm_call",
+        "callId": "llm_0009",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 16702,
+          "outputTokens": 298,
+          "totalTokens": 17000
+        },
+        "durationMs": 15946,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_f379ee75c1ef4cb093467d24",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 17,
+        "kind": "tool_exec",
+        "toolCallId": "call_f379ee75c1ef4cb093467d24",
+        "parentCallId": "llm_0009",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "rowCount": 2,
+          "decision": "finalize",
+          "reason": "Found 2 packages in the requirements hierarchy labeled as obsolete/to be removed. These are the specific packages the user asked about.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 18,
+        "kind": "llm_call",
+        "callId": "llm_0010",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 16824,
+          "outputTokens": 312,
+          "totalTokens": 17136
+        },
+        "durationMs": 21785,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_54b6cec3c12d418e9d492a6a",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 19,
+        "kind": "tool_exec",
+        "toolCallId": "call_54b6cec3c12d418e9d492a6a",
+        "parentCallId": "llm_0010",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Yes, there are 2 packages in the requirements hierarchy labeled as obsolete or to be removed:\n\n1. **\"03b OLD: proposed requirements (to be replaced with DOORS imported ones)\"** - Located in: TMT::Project::Work Packages::Telescope::WorkPackages::Control::Alignment and Phasing System::Systems Engineering::01 Components::Operational::APS::Black Box Specification::Requirements\n\n2. **\"01a Parent Requirements (OLD: to be removed once they no longer have links down to APS requirements)\"** - Located in: TMT::Project::Work Packages::Telescope::WorkPackages::Control::Alignment and Phasing System::Systems Engineering::01 Components::Operational::APS::Black Box Specification::Requirements\n\nBoth packages are within the APS (Alignment and Phasing System) requirements hierarchy and are marked with \"OLD\" or \"to be removed\" labels indicating they are planned for removal or replacement."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 20,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-04-02T06:37:03.412Z",
+        "status": "OK",
+        "finalAnswer": "Yes, there are 2 packages in the requirements hierarchy labeled as obsolete or to be removed:\n\n1. **\"03b OLD: proposed requirements (to be replaced with DOORS imported ones)\"** - Located in: TMT::Project::Work Packages::Telescope::WorkPackages::Control::Alignment and Phasing System::Systems Engineering::01 Components::Operational::APS::Black Box Specification::Requirements\n\n2. **\"01a Parent Requirements (OLD: to be removed once they no longer have links down to APS requirements)\"** - Located in: TMT::Project::Work Packages::Telescope::WorkPackages::Control::Alignment and Phasing System::Systems Engineering::01 Components::Operational::APS::Black Box Specification::Requirements\n\nBoth packages are within the APS (Alignment and Phasing System) requirements hierarchy and are marked with \"OLD\" or \"to be removed\" labels indicating they are planned for removal or replacement.",
+        "afterCallId": "llm_0010"
+      }
+    ],
+    "counts": {
+      "llmCalls": 10,
+      "toolExecs": 10
+    }
+  }
+}

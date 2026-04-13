@@ -1,0 +1,259 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q063",
+    "question": "In this model which task comes between 'Estimate insurance cost' and 'Send receipt'? (Model ID: 5ee15f85aeb74d8d9e31df0e41fea6fe)",
+    "durationMs": 8210,
+    "status": "OK",
+    "finalAnswer": "In the model with ID 5ee15f85aeb74d8d9e31df0e41fea6fe, there are several tasks that occur between 'Estimate insurance cost' and 'Send receipt', reflecting the process flow. These include:\n\n*   **Pay insurance**\n*   **Pay bike**\n*   **Give bike**\n*   **Send feedback**\n*   **Return bike back**\n*   **Report damage**\n*   **Damage evaluation**\n*   **Damage refund**\n\nThe process also includes several gateways (Exclusive, Parallel, and Event-Based) that manage the routing between these tasks.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 42204,
+      "outputTokens": 1094,
+      "totalTokens": 43298
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6313,
+          "outputTokens": 218,
+          "totalTokens": 6531
+        },
+        "durationMs": 1224,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "tool_sparql_query_i2pUq2Rp5EaZpZGywJnX",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "tool_sparql_query_i2pUq2Rp5EaZpZGywJnX",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?elem ?name ?type WHERE {\n  ?elem tai:belongsTo ?choreo .\n  ?choreo tai:belongsTo ?defs .\n  ?defs tai:belongsTo ?model .\n  ?model tai:originalId \"5ee15f85aeb74d8d9e31df0e41fea6fe\" .\n  ?elem bbo:name ?name .\n  FILTER(CONTAINS(LCASE(?name), \"estimate insurance cost\") || CONTAINS(LCASE(?name), \"send receipt\"))\n  ?elem a ?type .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 2
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6712,
+          "outputTokens": 62,
+          "totalTokens": 6774
+        },
+        "durationMs": 1094,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "tool_decision_log_RtYaOyCPWo7pylmyYiAe",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "tool_decision_log_RtYaOyCPWo7pylmyYiAe",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "status": "ok",
+          "reason": "I have identified the two tasks. Now I need to find the path between them to identify the intermediate task.",
+          "event": "after_sparql",
+          "decision": "retry",
+          "confidence": 1
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6762,
+          "outputTokens": 205,
+          "totalTokens": 6967
+        },
+        "durationMs": 1450,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "tool_sparql_query_6QmMW5ZCLmXyyQvdVPuG",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "tool_sparql_query_6QmMW5ZCLmXyyQvdVPuG",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 19,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?intermediateTask ?name WHERE {\n  ?startTask bbo:name \"Estimate insurance cost\" .\n  ?endTask bbo:name \"Send receipt\" .\n  \n  ?startTask (^bbo:has_sourceRef)/bbo:has_targetRef ?intermediateTask .\n  ?intermediateTask (^bbo:has_sourceRef)/bbo:has_targetRef ?endTask .\n  \n  ?intermediateTask bbo:name ?name .\n  FILTER(?intermediateTask != ?startTask && ?intermediateTask != ?endTask)\n}\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6978,
+          "outputTokens": 74,
+          "totalTokens": 7052
+        },
+        "durationMs": 1144,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "tool_decision_log_EFbe5J02f3dHDHCrjIY4",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "tool_decision_log_EFbe5J02f3dHDHCrjIY4",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "confidence": 0.8,
+          "event": "after_sparql",
+          "reason": "The previous path query returned no results, possibly because the path is longer or involves gateways. I will try a broader search for all nodes between the two tasks.",
+          "decision": "retry",
+          "status": "empty"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7040,
+          "outputTokens": 210,
+          "totalTokens": 7250
+        },
+        "durationMs": 1251,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "tool_sparql_query_ZfmRhGqi2LdmM1erxVCn",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "tool_sparql_query_ZfmRhGqi2LdmM1erxVCn",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 16,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?node ?nodeName ?type WHERE {\n  ?start bbo:name \"Estimate insurance cost\" .\n  ?end bbo:name \"Send receipt\" .\n  \n  ?start ((^bbo:has_sourceRef)/bbo:has_targetRef)+ ?node .\n  ?node ((^bbo:has_sourceRef)/bbo:has_targetRef)+ ?end .\n  \n  ?node bbo:name ?nodeName .\n  ?node a ?type .\n  FILTER(?node != ?start && ?node != ?end)\n}\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 14
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8399,
+          "outputTokens": 325,
+          "totalTokens": 8724
+        },
+        "durationMs": 1980,
+        "status": "OK",
+        "output": "<ctrl46><ctrl46><ctrl46><ctrl46>call:default_api:decision_log{confidence:0.9,decision:finalize,event:after_sparql,reason:In the model with ID 5ee15f85aeb74d8d9e31df0e41fea6fe, there are several tasks that occur between 'Estimate insurance c",
+        "plannedToolCalls": [
+          {
+            "id": "tool_final_answer_UAucwmuFOlvYmGqMkFi0",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "tool_final_answer_UAucwmuFOlvYmGqMkFi0",
+        "parentCallId": "llm_0006",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "In the model with ID 5ee15f85aeb74d8d9e31df0e41fea6fe, there are several tasks that occur between 'Estimate insurance cost' and 'Send receipt', reflecting the process flow. These include:\n\n*   **Pay insurance**\n*   **Pay bike**\n*   **Give bike**\n*   **Send feedback**\n*   **Return bike back**\n*   **Report damage**\n*   **Damage evaluation**\n*   **Damage refund**\n\nThe process also includes several gateways (Exclusive, Parallel, and Event-Based) that manage the routing between these tasks."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T00:14:08.338Z",
+        "status": "OK",
+        "finalAnswer": "In the model with ID 5ee15f85aeb74d8d9e31df0e41fea6fe, there are several tasks that occur between 'Estimate insurance cost' and 'Send receipt', reflecting the process flow. These include:\n\n*   **Pay insurance**\n*   **Pay bike**\n*   **Give bike**\n*   **Send feedback**\n*   **Return bike back**\n*   **Report damage**\n*   **Damage evaluation**\n*   **Damage refund**\n\nThe process also includes several gateways (Exclusive, Parallel, and Event-Based) that manage the routing between these tasks.",
+        "afterCallId": "llm_0006"
+      }
+    ],
+    "counts": {
+      "llmCalls": 6,
+      "toolExecs": 6
+    }
+  }
+}

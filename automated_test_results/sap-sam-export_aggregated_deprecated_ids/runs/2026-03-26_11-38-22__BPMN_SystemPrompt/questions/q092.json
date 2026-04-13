@@ -1,0 +1,223 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q092",
+    "question": "Which model contains a task called 'Take order from the restaurant & deliver it'?",
+    "durationMs": 62305,
+    "status": "OK",
+    "finalAnswer": "The task 'Take order from the restaurant & deliver it' is contained in the model:\n\n**Model Name:** Jane Doe_ZAMAWIANIE_JEDZENIA_ZA_POŚREDNICTWEM_SERWISU_PYSZNE.PL_Z_WYKORZYSTANIEM_USŁUG_UBER_EATS(choreography)\n\n**Organization:** Org2\n\n**Corpus:** SAP-SAM Aggregated BPMN Corpus",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 33716,
+      "outputTokens": 1159,
+      "totalTokens": 34875
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6254,
+          "outputTokens": 187,
+          "totalTokens": 6441
+        },
+        "durationMs": 16120,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_a9c018e1b45e430d95c2009f",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_a9c018e1b45e430d95c2009f",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 15,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?elem ?name ?type ?comment WHERE {\n  ?elem bbo:name ?name .\n  FILTER(CONTAINS(LCASE(STR(?name)), LCASE(\"Take order from the restaurant & deliver it\")))\n  ?elem a ?type .\n  OPTIONAL { ?elem rdfs:comment ?comment . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6486,
+          "outputTokens": 161,
+          "totalTokens": 6647
+        },
+        "durationMs": 11529,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_eee28ef605bd467d9e5fae71",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_eee28ef605bd467d9e5fae71",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 1,
+          "decision": "retry",
+          "reason": "Found the task element. Need to follow the containment hierarchy (tai:belongsTo) to find the model it belongs to.",
+          "confidence": 0.9
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6610,
+          "outputTokens": 342,
+          "totalTokens": 6952
+        },
+        "durationMs": 19433,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_5c9d5b84589f40f785ad3af5",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_5c9d5b84589f40f785ad3af5",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 6,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?model ?modelName ?org ?orgName ?corpus ?corpusName WHERE {\n  ?task bbo:name \"Take order from the restaurant & deliver it\" .\n  ?task tai:belongsTo ?choreo .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  ?defs a bboExt:Definitions .\n  ?defs tai:belongsTo ?model .\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  ?org a bboExt:Organization .\n  OPTIONAL { ?org bbo:name ?orgName } .\n  OPTIONAL { ?org rdfs:label ?orgLabel } .\n  BIND(COALESCE(?orgName, ?orgLabel) AS ?orgNameSafe)\n  ?org tai:belongsTo ?corpus .\n  ?corpus a bboExt:Corpus .\n  OPTIONAL { ?corpus bbo:name ?corpusName } .\n  OPTIONAL { ?corpus rdfs:label ?corpusLabel } .\n  BIND(COALESCE(?corpusName, ?corpusLabel) AS ?corpusNameSafe)\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7095,
+          "outputTokens": 249,
+          "totalTokens": 7344
+        },
+        "durationMs": 7694,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_28e7115dd6f94cb7b5454d7c",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_28e7115dd6f94cb7b5454d7c",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 1,
+          "decision": "finalize",
+          "reason": "Found the model containing the task. The task 'Take order from the restaurant & deliver it' belongs to the model \"Jane Doe_ZAMAWIANIE_JEDZENIA_ZA_POŚREDNICTWEM_SERWISU_PYSZNE.PL_Z_WYKORZYSTANIEM_USŁUG_UBER_EATS(choreography)\" in Org2.",
+          "confidence": 1
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7271,
+          "outputTokens": 220,
+          "totalTokens": 7491
+        },
+        "durationMs": 7484,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_872cce211daa401b8b6064ab",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_872cce211daa401b8b6064ab",
+        "parentCallId": "llm_0005",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "The task 'Take order from the restaurant & deliver it' is contained in the model:\n\n**Model Name:** Jane Doe_ZAMAWIANIE_JEDZENIA_ZA_POŚREDNICTWEM_SERWISU_PYSZNE.PL_Z_WYKORZYSTANIEM_USŁUG_UBER_EATS(choreography)\n\n**Organization:** Org2\n\n**Corpus:** SAP-SAM Aggregated BPMN Corpus"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T18:43:04.283Z",
+        "status": "OK",
+        "finalAnswer": "The task 'Take order from the restaurant & deliver it' is contained in the model:\n\n**Model Name:** Jane Doe_ZAMAWIANIE_JEDZENIA_ZA_POŚREDNICTWEM_SERWISU_PYSZNE.PL_Z_WYKORZYSTANIEM_USŁUG_UBER_EATS(choreography)\n\n**Organization:** Org2\n\n**Corpus:** SAP-SAM Aggregated BPMN Corpus",
+        "afterCallId": "llm_0005"
+      }
+    ],
+    "counts": {
+      "llmCalls": 5,
+      "toolExecs": 5
+    }
+  }
+}

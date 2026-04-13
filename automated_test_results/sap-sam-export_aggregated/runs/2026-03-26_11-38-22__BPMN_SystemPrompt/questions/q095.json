@@ -1,0 +1,411 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q095",
+    "question": "In this model, which tasks have relations to multiple messages? (Model ID: 4ac969819d6749d495c4f3be5f4745de)",
+    "durationMs": 142527,
+    "status": "OK",
+    "finalAnswer": "In model ID 4ac969819d6749d495c4f3be5f4745de, there are **5 tasks that have relations to multiple messages** (each with 2 message flows):\n\n1. **Notify Applicants** (initiating participant: Admissions Officer) — 2 messages\n2. **Reject application** (initiating participant: Admissions Officer) — 2 messages\n3. **Applications verified** (initiating participant: Admissions Officer) — 2 messages\n4. **Receive documents** (initiating participant: Applicant) — 2 messages\n5. **Confirmation of applicants** (initiating participant: Application System) — 2 messages\n\nAll these tasks are involved in exactly 2 message flows each within the choreography.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 99928,
+      "outputTokens": 3605,
+      "totalTokens": 103533
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6275,
+          "outputTokens": 285,
+          "totalTokens": 6560
+        },
+        "durationMs": 12207,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_07e544d845ae47e89be57de0",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_07e544d845ae47e89be57de0",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?task ?taskName ?choreo WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"4ac969819d6749d495c4f3be5f4745de\" .\n  ?model tai:belongsTo ?org .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo tai:belongsTo ?defs .\n  ?choreo a bboExt:Choreography .\n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n  ?task bbo:name ?taskName .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 10
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7436,
+          "outputTokens": 190,
+          "totalTokens": 7626
+        },
+        "durationMs": 10596,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_651a32d3e1584048af04d736",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_651a32d3e1584048af04d736",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 10,
+          "decision": "retry",
+          "reason": "Found 10 tasks in the model. Now need to find message flow relations to identify which tasks have multiple message relations.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7558,
+          "outputTokens": 248,
+          "totalTokens": 7806
+        },
+        "durationMs": 11139,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_a89a358d7e134b79ae5074d4",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_a89a358d7e134b79ae5074d4",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?msgFlow ?sourceRef ?targetRef ?msgRef WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"4ac969819d6749d495c4f3be5f4745de\" .\n  ?model tai:belongsTo ?org .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo tai:belongsTo ?defs .\n  ?choreo a bboExt:Choreography .\n  ?msgFlow a bboExt:MessageFlow .\n  ?msgFlow tai:belongsTo ?choreo .\n  ?msgFlow bboExt:sourceRef ?sourceRef .\n  ?msgFlow bboExt:targetRef ?targetRef .\n  OPTIONAL { ?msgFlow bboExt:messageRef ?msgRef . }\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 15
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9764,
+          "outputTokens": 180,
+          "totalTokens": 9944
+        },
+        "durationMs": 11411,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_7e23d97cb64d443facd16c13",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_7e23d97cb64d443facd16c13",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 15,
+          "decision": "retry",
+          "reason": "Found 15 message flows. Now need to map sourceRef/targetRef strings to task URIs and count which tasks appear multiple times.",
+          "confidence": 0.85
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9890,
+          "outputTokens": 362,
+          "totalTokens": 10252
+        },
+        "durationMs": 15687,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_8e966831cea24c989c648bd5",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_8e966831cea24c989c648bd5",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 37,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?taskName (COUNT(?msgFlow) AS ?msgCount) ?role WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"4ac969819d6749d495c4f3be5f4745de\" .\n  ?model tai:belongsTo ?org .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo tai:belongsTo ?defs .\n  ?choreo a bboExt:Choreography .\n  \n  # Get all message flows\n  ?msgFlow a bboExt:MessageFlow .\n  ?msgFlow tai:belongsTo ?choreo .\n  ?msgFlow bboExt:sourceRef ?sourceRef .\n  ?msgFlow bboExt:targetRef ?targetRef .\n  \n  # Get all tasks\n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n  ?task bbo:name ?taskName .\n  \n  # Match sourceRef to task\n  FILTER(STRENDS(STR(?task), ?sourceRef))\n  \n  BIND(\"source\" AS ?role)\n}\nGROUP BY ?taskName ?role\nHAVING (COUNT(?msgFlow) > 1)\nORDER BY DESC(?msgCount)\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10235,
+          "outputTokens": 383,
+          "totalTokens": 10618
+        },
+        "durationMs": 11175,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_15d687142b7f4db1ba0f20e1",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_15d687142b7f4db1ba0f20e1",
+        "parentCallId": "llm_0006",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?task ?taskId ?taskName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"4ac969819d6749d495c4f3be5f4745de\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo tai:belongsTo ?defs .\n  ?choreo a bboExt:Choreography .\n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n  ?task bbo:name ?taskName .\n  BIND(STRAFTER(STR(?task), \"sid-\") AS ?taskId)\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 10
+        },
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 11235,
+          "outputTokens": 882,
+          "totalTokens": 12117
+        },
+        "durationMs": 24114,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_80a0728429a54f6eb04aa717",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_80a0728429a54f6eb04aa717",
+        "parentCallId": "llm_0007",
+        "toolName": "sparql_query",
+        "durationMs": 7,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?elem ?name ?type WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"4ac969819d6749d495c4f3be5f4745de\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo tai:belongsTo ?defs .\n  ?choreo a bboExt:Choreography .\n  \n  # Get all elements in the choreography\n  ?elem tai:belongsTo ?choreo .\n  ?elem a ?type .\n  ?elem bbo:name ?name .\n  \n  # Look for elements matching message flow refs\n  FILTER(STRENDS(STR(?elem), \"sid-DCA2C690-C635-4E4E-8D89-C64760F8D0CB\") \n       || STRENDS(STR(?elem), \"sid-9FAA0B4B-926F-4729-9CB9-E5EF0FE68DBB\")\n       || STRENDS(STR(?elem), \"sid-ABDA66DF-39A9-4B4A-B60C-C6EEB3C12F74\")\n       || STRENDS(STR(?elem), \"sid-14F1815C-1974-4FE7-9DC1-11EE5B2B0AE1\")\n       || STRENDS(STR(?elem), \"sid-C99DABE3-DA4B-4364-9096-B4F524C1AE07\"))\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 5
+        },
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "llm_call",
+        "callId": "llm_0008",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 11983,
+          "outputTokens": 644,
+          "totalTokens": 12627
+        },
+        "durationMs": 25974,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_ca25b907ef674205917dd623",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 15,
+        "kind": "tool_exec",
+        "toolCallId": "call_ca25b907ef674205917dd623",
+        "parentCallId": "llm_0008",
+        "toolName": "sparql_query",
+        "durationMs": 47,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?taskName ?partName ?partRef (COUNT(?msgFlow) AS ?msgCount) WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"4ac969819d6749d495c4f3be5f4745de\" .\n  ?defs tai:belongsTo ?model .\n  ?defs a bboExt:Definitions .\n  ?choreo tai:belongsTo ?defs .\n  ?choreo a bboExt:Choreography .\n  \n  # Get tasks with their initiating participant\n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n  ?task bbo:name ?taskName .\n  ?task bboExt:initiatingParticipantRef ?initPartRef .\n  \n  # Get all participants in this choreography\n  ?participant a bboExt:Participant .\n  ?participant tai:belongsTo ?choreo .\n  ?participant bbo:name ?partName .\n  \n  # Match participant to task's initiating participant\n  FILTER(STRENDS(STR(?participant), ?initPartRef))\n  \n  # Also get the participant ref for matching with message flows\n  BIND(?initPartRef AS ?partRef)\n  \n  # Get message flows where this participant is source or target\n  ?msgFlow a bboExt:MessageFlow .\n  ?msgFlow tai:belongsTo ?choreo .\n  FILTER(STRENDS(STR(?msgFlow), ?partRef) = false)  # Exclude self-join issue\n  \n  # Check if message flow involves this participant\n  { ?msgFlow bboExt:sourceRef ?partRef }\n  UNION\n  { ?msgFlow bboExt:targetRef ?partRef }\n}\nGROUP BY ?taskName ?partName ?partRef\nHAVING (COUNT(?msgFlow) > 1)\nORDER BY DESC(?msgCount)\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 5
+        },
+        "error": null
+      },
+      {
+        "seq": 16,
+        "kind": "llm_call",
+        "callId": "llm_0009",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 12710,
+          "outputTokens": 230,
+          "totalTokens": 12940
+        },
+        "durationMs": 11563,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_96fe5f5b0a3345e68c404a27",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 17,
+        "kind": "tool_exec",
+        "toolCallId": "call_96fe5f5b0a3345e68c404a27",
+        "parentCallId": "llm_0009",
+        "toolName": "decision_log",
+        "durationMs": 2,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 5,
+          "decision": "finalize",
+          "reason": "Found 5 tasks with relations to multiple messages (2 message flows each). The query correctly joins tasks via their initiating participant references to message flow source/target refs.",
+          "confidence": 0.9
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 18,
+        "kind": "llm_call",
+        "callId": "llm_0010",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 12842,
+          "outputTokens": 201,
+          "totalTokens": 13043
+        },
+        "durationMs": 8491,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_eb556d9aea314427b78ba213",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 19,
+        "kind": "tool_exec",
+        "toolCallId": "call_eb556d9aea314427b78ba213",
+        "parentCallId": "llm_0010",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "In model ID 4ac969819d6749d495c4f3be5f4745de, there are **5 tasks that have relations to multiple messages** (each with 2 message flows):\n\n1. **Notify Applicants** (initiating participant: Admissions Officer) — 2 messages\n2. **Reject application** (initiating participant: Admissions Officer) — 2 messages\n3. **Applications verified** (initiating participant: Admissions Officer) — 2 messages\n4. **Receive documents** (initiating participant: Applicant) — 2 messages\n5. **Confirmation of applicants** (initiating participant: Application System) — 2 messages\n\nAll these tasks are involved in exactly 2 message flows each within the choreography."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 20,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T18:49:32.432Z",
+        "status": "OK",
+        "finalAnswer": "In model ID 4ac969819d6749d495c4f3be5f4745de, there are **5 tasks that have relations to multiple messages** (each with 2 message flows):\n\n1. **Notify Applicants** (initiating participant: Admissions Officer) — 2 messages\n2. **Reject application** (initiating participant: Admissions Officer) — 2 messages\n3. **Applications verified** (initiating participant: Admissions Officer) — 2 messages\n4. **Receive documents** (initiating participant: Applicant) — 2 messages\n5. **Confirmation of applicants** (initiating participant: Application System) — 2 messages\n\nAll these tasks are involved in exactly 2 message flows each within the choreography.",
+        "afterCallId": "llm_0010"
+      }
+    ],
+    "counts": {
+      "llmCalls": 10,
+      "toolExecs": 10
+    }
+  }
+}

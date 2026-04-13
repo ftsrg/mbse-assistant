@@ -1,0 +1,261 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q159",
+    "question": "In what language are the organization's models written? (Organization ID: 38b17e822a5e4307ae051694293e4d0f)",
+    "durationMs": 22757,
+    "status": "OK",
+    "finalAnswer": "The models in organization Org20 (ID: 38b17e822a5e4307ae051694293e4d0f) are written in **Polish**.\n\nThis is evident from the task names and participant names found in the models, such as:\n- Task names: \"Ocena płynności finansowej\", \"Wniosek o wydanie sprzętu\", \"Wypożyczenie sprzętu\"\n- Participant names: \"Dział sprzętowy\", \"Obsługa\", \"Klient\", \"Wypożyczalnia\", \"Serwisant\", \"Dostawca\"\n\nThe organization contains 12 models with Polish-language content.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 49739,
+      "outputTokens": 1440,
+      "totalTokens": 51179
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6660,
+          "outputTokens": 330,
+          "totalTokens": 6990
+        },
+        "durationMs": 5763,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_60a2eb51880247c4b834d97c",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_60a2eb51880247c4b834d97c",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 7,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?org ?orgLabel ?model ?modelName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"38b17e822a5e4307ae051694293e4d0f\" .\n  OPTIONAL { ?org rdfs:label ?orgLabel . }\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n  OPTIONAL { ?model bbo:name ?modelName . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 12
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7948,
+          "outputTokens": 296,
+          "totalTokens": 8244
+        },
+        "durationMs": 5990,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_b90f7315ec784d77870e841a",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_b90f7315ec784d77870e841a",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 12,
+          "decision": "retry",
+          "reason": "Found 12 models in organization Org20. Model names suggest mixed languages (Polish and English visible). Need to explore further to determine the actual language of model content - check task names, participant names, or any language metadata.",
+          "confidence": 0.7
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8108,
+          "outputTokens": 371,
+          "totalTokens": 8479
+        },
+        "durationMs": 4039,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_d142119288934a0abfd20ec7",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_d142119288934a0abfd20ec7",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 8,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?taskName ?participantName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"38b17e822a5e4307ae051694293e4d0f\" .\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n  ?defs a bboExt:Definitions .\n  ?defs tai:belongsTo ?model .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n  OPTIONAL { ?task bbo:name ?taskName . }\n  OPTIONAL {\n    ?participant a bboExt:Participant .\n    ?participant tai:belongsTo ?choreo .\n    ?participant bbo:name ?participantName .\n  }\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 50
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8846,
+          "outputTokens": 165,
+          "totalTokens": 9011
+        },
+        "durationMs": 2756,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_7c2c803ff4794298ad94f72d",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_7c2c803ff4794298ad94f72d",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 50,
+          "decision": "finalize",
+          "reason": "The task names and participant names are clearly in Polish (e.g., \"Ocena płynności finansowej\", \"Wniosek o wydanie sprzętu\", \"Wypożyczenie sprzętu\", \"Dział sprzętowy\", \"Obsługa\", \"Klient\", \"Wypożyczalnia\"). This confirms the models are written in Polish.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9030,
+          "outputTokens": 98,
+          "totalTokens": 9128
+        },
+        "durationMs": 1580,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_68c2e304b24144c2ab65e60b",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_68c2e304b24144c2ab65e60b",
+        "parentCallId": "llm_0005",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "decision": "finalize",
+          "reason": "Confirmed that organization Org20's models are written in Polish based on task and participant names.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9147,
+          "outputTokens": 180,
+          "totalTokens": 9327
+        },
+        "durationMs": 2580,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_d3e6ab7bd9394b0d837464f7",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_d3e6ab7bd9394b0d837464f7",
+        "parentCallId": "llm_0006",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "The models in organization Org20 (ID: 38b17e822a5e4307ae051694293e4d0f) are written in **Polish**.\n\nThis is evident from the task names and participant names found in the models, such as:\n- Task names: \"Ocena płynności finansowej\", \"Wniosek o wydanie sprzętu\", \"Wypożyczenie sprzętu\"\n- Participant names: \"Dział sprzętowy\", \"Obsługa\", \"Klient\", \"Wypożyczalnia\", \"Serwisant\", \"Dostawca\"\n\nThe organization contains 12 models with Polish-language content."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-28T17:14:18.483Z",
+        "status": "OK",
+        "finalAnswer": "The models in organization Org20 (ID: 38b17e822a5e4307ae051694293e4d0f) are written in **Polish**.\n\nThis is evident from the task names and participant names found in the models, such as:\n- Task names: \"Ocena płynności finansowej\", \"Wniosek o wydanie sprzętu\", \"Wypożyczenie sprzętu\"\n- Participant names: \"Dział sprzętowy\", \"Obsługa\", \"Klient\", \"Wypożyczalnia\", \"Serwisant\", \"Dostawca\"\n\nThe organization contains 12 models with Polish-language content.",
+        "afterCallId": "llm_0006"
+      }
+    ],
+    "counts": {
+      "llmCalls": 6,
+      "toolExecs": 6
+    }
+  }
+}

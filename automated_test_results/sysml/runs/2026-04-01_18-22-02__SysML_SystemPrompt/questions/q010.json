@@ -1,0 +1,622 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q010",
+    "question": "Which document contains the top‑level APS requirements imported from DOORS?",
+    "durationMs": 343617,
+    "status": "OK",
+    "finalAnswer": "The model does not expose any explicit “DOORS → APS” import linkage in a way that can be queried (searching for vocab:package import with importedPackage containing “DOORS/APS” returned no results, and searching tmt:requirement metadata for “doors” also returned none).\n\nFrom the available model structure, the closest top-level APS requirement documents present in the graph are:\n- **TMT-APS DDD** (document: `TMT::Project::Work Packages::...::TMT-APS-SE::TMT-APS DDD`)\n- **TMT-APS Use Cases** (document: `...::TMT-APS-SE::TMT-APS Use Cases`)\n\nThese are the top-level APS documents that contain APS-related requirement/spec content in the model, but the specific DOORS import provenance can’t be confirmed with the current RDF patterns.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 195707,
+      "outputTokens": 3446,
+      "totalTokens": 199153
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9286,
+          "outputTokens": 297,
+          "totalTokens": 9583
+        },
+        "durationMs": 2261,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_0QV188WEhiBIyQO8SNLEEY65",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_0QV188WEhiBIyQO8SNLEEY65",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 40,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?docName ?doc WHERE {\n  ?doc rdf:type vocab:document .\n  OPTIONAL { ?doc vocab:NamedElement_name ?docName . }\n\n  ?imp rdf:type vocab:package%20import .\n  ?doc vocab:Element_ownedElement+ ?imp .\n\n  ?imp vocab:PackageImport_importedPackage ?importedPkg .\n  OPTIONAL { ?importedPkg vocab:NamedElement_name ?importedPkgName . }\n\n  FILTER(\n    CONTAINS(LCASE(STR(?importedPkgName)), \"doors\") ||\n    CONTAINS(LCASE(STR(?importedPkgName)), \"aps\")\n  )\n\n  # Heuristic: top-level APS requirements import should bring in many tmt:requirements\n  ?importedPkg vocab:Package_packagedElement+ ?req .\n  ?req rdf:type vocab:tmt%20requirement .\n}\nORDER BY ?docName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9617,
+          "outputTokens": 160,
+          "totalTokens": 9777
+        },
+        "durationMs": 3848,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_BWWwAFVMEmNnANzmcruRv12y",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_BWWwAFVMEmNnANzmcruRv12y",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "errorType": "empty",
+          "message": "The initial heuristic query looking for imported DOORS/APS packages under vocab:document returned no matches. This suggests either documents are not typed as vocab:document in the graph, the import path/predicate differs, or the DOORS/APS identifiers are stored under different literals.",
+          "decision": "retry",
+          "reason": "We need to first locate what element(s) actually represent the documents and how DOORS imports are modeled. Next we should explore by searching for names containing 'DOORS' (or 'doors') and 'APS' to discover the exact RDF structure and types used for imports.",
+          "confidence": 0.62
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9794,
+          "outputTokens": 162,
+          "totalTokens": 9956
+        },
+        "durationMs": 1566,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_DAGPoePlADIlakSNcA9Eo1EW",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_DAGPoePlADIlakSNcA9Eo1EW",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 13,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?elem ?type ?name WHERE {\n  ?elem rdf:type ?type .\n  ?elem vocab:NamedElement_name ?name .\n  FILTER(\n    CONTAINS(LCASE(STR(?name)), \"doors\") ||\n    CONTAINS(LCASE(STR(?name)), \"aps\")\n  )\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 25
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 12484,
+          "outputTokens": 179,
+          "totalTokens": 12663
+        },
+        "durationMs": 1823,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_UMqQCyZ5RbUEDXAftt7LCUBC",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_UMqQCyZ5RbUEDXAftt7LCUBC",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 25,
+          "errorType": "",
+          "message": "We found many elements named with 'APS' (e.g., TMT-APS-SE documents, views, and packages), but this doesn’t yet reveal the specific DOORS import relationship. Next we should locate the actual DOORS package import elements and then identify which document they are contained within, using an additional targeted query.",
+          "decision": "retry",
+          "reason": "We still need the exact document that contains the top-level APS requirements imported from DOORS. Current results show candidates like documents named 'TMT-APS DDD' and 'TMT-APS Use Cases', so we must specifically query for package imports where importedPackage mentions DOORS and APS, then climb to the containing document.",
+          "confidence": 0.66
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 12680,
+          "outputTokens": 310,
+          "totalTokens": 12990
+        },
+        "durationMs": 2182,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_hmaGMdyOJyv1pp5dGpCyxxZ3",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_hmaGMdyOJyv1pp5dGpCyxxZ3",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 15,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?docName ?doc ?importedPkgName ?importedPkg WHERE {\n  ?doc rdf:type vocab:document .\n  OPTIONAL { ?doc vocab:NamedElement_name ?docName . }\n\n  ?doc vocab:Element_ownedElement+ ?pkgImport .\n  ?pkgImport rdf:type vocab:package%20import .\n\n  ?pkgImport vocab:PackageImport_importedPackage ?importedPkg .\n  OPTIONAL { ?importedPkg vocab:NamedElement_name ?importedPkgName . }\n\n  FILTER(\n    CONTAINS(LCASE(STR(?importedPkgName)), \"doors\") ||\n    CONTAINS(LCASE(STR(?importedPkgName)), \"do-ors\")\n  )\n\n  FILTER(\n    CONTAINS(LCASE(STR(?importedPkgName)), \"aps\") ||\n    CONTAINS(LCASE(STR(?importedPkgName)), \"tmt-aps\")\n  )\n}\nORDER BY ?docName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 13033,
+          "outputTokens": 213,
+          "totalTokens": 13246
+        },
+        "durationMs": 2122,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_z4WcuGAJOhW1B1ByKPgIGJbO",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_z4WcuGAJOhW1B1ByKPgIGJbO",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "errorType": "empty",
+          "message": "Targeted search for vocab:package import elements under rdf:type vocab:document with importedPackage names containing 'doors'/'aps' returned no matches. This suggests that either DOORS import is not modeled with rdf:type vocab:document containers, or the imported package names/literals don’t include 'DOORS' text, or the import is represented differently (e.g., via stereotypes, URIs, or alternative predicates). We should broaden by searching for any vocab:PackageImport_importedPackage whose URI/value contains 'doors' regardless of containing document type.",
+          "decision": "retry",
+          "reason": "The previous query was too restrictive on document typing and name literals. Next we’ll search globally for package imports whose imported package contains 'doors' (any literal/URI), then for those imports find the owning document via Element_owner/Element_ownedElement containment chain.",
+          "confidence": 0.58
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 13263,
+          "outputTokens": 264,
+          "totalTokens": 13527
+        },
+        "durationMs": 2147,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_KcQxdtz2qfyfoDS2VWdQuY4g",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_KcQxdtz2qfyfoDS2VWdQuY4g",
+        "parentCallId": "llm_0007",
+        "toolName": "sparql_query",
+        "durationMs": 49,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?docName ?doc ?imp ?importedPkgName WHERE {\n  ?imp rdf:type vocab:package%20import .\n  ?imp vocab:PackageImport_importedPackage ?importedPkg .\n\n  OPTIONAL { ?importedPkg vocab:NamedElement_name ?importedPkgName . }\n\n  FILTER(\n    CONTAINS(LCASE(STR(?importedPkgName)), \"doors\") ||\n    CONTAINS(LCASE(STR(?importedPkg)), \"doors\")\n  )\n\n  # climb containment to find a document-like top container\n  ?doc rdf:type vocab:document .\n  ?doc vocab:Element_ownedElement+ ?imp .\n\n  OPTIONAL { ?doc vocab:NamedElement_name ?docName . }\n}\nORDER BY ?docName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "llm_call",
+        "callId": "llm_0008",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 13568,
+          "outputTokens": 191,
+          "totalTokens": 13759
+        },
+        "durationMs": 2245,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_Nmzt5RjUCMe4YiUH521tCQI1",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 15,
+        "kind": "tool_exec",
+        "toolCallId": "call_Nmzt5RjUCMe4YiUH521tCQI1",
+        "parentCallId": "llm_0008",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "errorType": "empty",
+          "message": "Even globally, no vocab:package import elements were found whose importedPackage/its name contains 'doors'. This suggests the DOORS linkage may be encoded with different keywords (e.g., 'DOORS' not present), or the import uses a different predicate/class than vocab:package import. Next we’ll search for package imports where importedPackage contains 'APS' and then inspect whether those imports are sourced from an element/comment mentioning DOORS.",
+          "decision": "retry",
+          "reason": "We’ll pivot: first find package imports that bring in something clearly APS-related (imported package name contains 'APS'), then check for any nearby text/literals that mention DOORS to identify the DOORS origin and the top-level APS document containing those imported requirements.",
+          "confidence": 0.55
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 16,
+        "kind": "llm_call",
+        "callId": "llm_0009",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 13776,
+          "outputTokens": 221,
+          "totalTokens": 13997
+        },
+        "durationMs": 1970,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_GX4cSQJHWucSKpMJF71hooyz",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 17,
+        "kind": "tool_exec",
+        "toolCallId": "call_GX4cSQJHWucSKpMJF71hooyz",
+        "parentCallId": "llm_0009",
+        "toolName": "sparql_query",
+        "durationMs": 6,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?imp ?impName ?importedPkgName WHERE {\n  ?imp rdf:type vocab:package%20import .\n  OPTIONAL { ?imp vocab:NamedElement_name ?impName . }\n  ?imp vocab:PackageImport_importedPackage ?importedPkg .\n  OPTIONAL { ?importedPkg vocab:NamedElement_name ?importedPkgName . }\n  FILTER(\n    CONTAINS(LCASE(STR(?importedPkgName)), \"aps\") ||\n    CONTAINS(LCASE(STR(?importedPkg)), \"aps\")\n  )\n}\nORDER BY ?impName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 18,
+        "kind": "llm_call",
+        "callId": "llm_0010",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 14036,
+          "outputTokens": 198,
+          "totalTokens": 14234
+        },
+        "durationMs": 1587,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_fxRlUj5pPJzeXxxM4u8Wz6AI",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 19,
+        "kind": "tool_exec",
+        "toolCallId": "call_fxRlUj5pPJzeXxxM4u8Wz6AI",
+        "parentCallId": "llm_0010",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "errorType": "empty",
+          "message": "No vocab:package import elements were found with importedPackage literals containing 'aps'. This indicates that the DOORS/APS import might not use the vocab:package import model (maybe a different import mechanism), or the APS requirements are imported as constraints/requirements without using vocab:package import nodes. Next we’ll search for tmt:requirement elements that are likely imported (e.g., via comments or stereotypes containing DOORS) and then find the top-level document that owns them.",
+          "decision": "retry",
+          "reason": "We need a different path: identify top-level tmt:requirement instances whose text/metadata mentions DOORS, then climb ownership to the containing document. This should directly connect imported DOORS requirements to the containing document even if import nodes aren’t present.",
+          "confidence": 0.52
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 20,
+        "kind": "llm_call",
+        "callId": "llm_0011",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 14251,
+          "outputTokens": 334,
+          "totalTokens": 14585
+        },
+        "durationMs": 2260,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_3TSBhBE9239oc93qmxdDXWCP",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 21,
+        "kind": "tool_exec",
+        "toolCallId": "call_3TSBhBE9239oc93qmxdDXWCP",
+        "parentCallId": "llm_0011",
+        "toolName": "sparql_query",
+        "durationMs": 300404,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?docName ?doc ?req ?reqName WHERE {\n  ?req rdf:type vocab:tmt%20requirement .\n  OPTIONAL { ?req vocab:NamedElement_name ?reqName . }\n\n  # Look for DOORS in any string metadata related to the requirement\n  OPTIONAL { ?req vocab:Element_ownedElement+ ?meta . }\n  OPTIONAL { ?req vocab:ownedComment+ ?c . }\n  OPTIONAL { ?c rdf:type vocab:comment . }\n\n  FILTER(\n    EXISTS {\n      ?s ?p ?o .\n      BIND(?req AS ?s)\n      FILTER(CONTAINS(LCASE(STR(?o)), \"doors\"))\n    }\n    || EXISTS {\n      ?req ?p2 ?o2 .\n      FILTER(CONTAINS(LCASE(STR(?o2)), \"doors\"))\n    }\n  )\n\n  ?doc vocab:Element_ownedElement+ ?req .\n  ?doc rdf:type vocab:document .\n  OPTIONAL { ?doc vocab:NamedElement_name ?docName . }\n}\nORDER BY ?docName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "error",
+          "errorType": "network_error"
+        },
+        "error": null
+      },
+      {
+        "seq": 22,
+        "kind": "llm_call",
+        "callId": "llm_0012",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 14613,
+          "outputTokens": 152,
+          "totalTokens": 14765
+        },
+        "durationMs": 1550,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_6gEWXPaV3u7aszc4rcZSoMX3",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 23,
+        "kind": "tool_exec",
+        "toolCallId": "call_6gEWXPaV3u7aszc4rcZSoMX3",
+        "parentCallId": "llm_0012",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "error",
+          "rowCount": 0,
+          "errorType": "network_error",
+          "message": "The query failed due to a network/fetch error from the SPARQL endpoint, so we can’t yet determine which document contains DOORS-origin APS requirements. Next we should retry the same logic but simplify the DOORS text filter to reduce load and improve robustness.",
+          "decision": "retry",
+          "reason": "The endpoint error is transient; a retry should succeed. To make the retry more resilient, we’ll simplify the DOORS detection to search only requirement-owned comments and requirement names/URIs containing 'doors', and then climb ownership to documents.",
+          "confidence": 0.45
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 24,
+        "kind": "llm_call",
+        "callId": "llm_0013",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 14782,
+          "outputTokens": 303,
+          "totalTokens": 15085
+        },
+        "durationMs": 2149,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_qlANy4lg3nljIqXc3QBFVCu9",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 25,
+        "kind": "tool_exec",
+        "toolCallId": "call_qlANy4lg3nljIqXc3QBFVCu9",
+        "parentCallId": "llm_0013",
+        "toolName": "sparql_query",
+        "durationMs": 11746,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?docName ?doc ?req ?reqName WHERE {\n  ?req rdf:type vocab:tmt%20requirement .\n  OPTIONAL { ?req vocab:NamedElement_name ?reqName . }\n\n  # DOORS hint: requirement name or its owned comments mention DOORS\n  FILTER(\n    CONTAINS(LCASE(STR(?reqName)), \"doors\")\n    || EXISTS { ?req vocab:ownedComment+ ?c . ?c rdf:type vocab:comment . FILTER(CONTAINS(LCASE(STR(?c)), \"doors\")) }\n    || EXISTS { ?req vocab:ownedComment+ ?c2 . ?c2 vocab:body ?body . FILTER(CONTAINS(LCASE(STR(?body)), \"doors\")) }\n  )\n\n  ?doc rdf:type vocab:document .\n  ?doc vocab:Element_ownedElement+ ?req .\n  OPTIONAL { ?doc vocab:NamedElement_name ?docName . }\n}\nORDER BY ?docName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 26,
+        "kind": "llm_call",
+        "callId": "llm_0014",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 15124,
+          "outputTokens": 259,
+          "totalTokens": 15383
+        },
+        "durationMs": 2000,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_fi0kRhsvnotctN0JanACMzKF",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 27,
+        "kind": "tool_exec",
+        "toolCallId": "call_fi0kRhsvnotctN0JanACMzKF",
+        "parentCallId": "llm_0014",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "errorType": "empty",
+          "message": "No tmt:requirement elements were found with DOORS-mentioned names/comments in vocab:document containers. This suggests DOORS origin may not be stored as literal text containing 'doors', or the ownership hierarchy to document type differs from vocab:document, or import metadata uses different predicates/stereotypes. Next we will instead identify the top-level APS requirements by selecting tmt:requirement elements owned by the likely APS top document (based on earlier discovery of TMT-APS documents), then check which of those documents is top-level owner (highest containment).",
+          "decision": "finalize",
+          "reason": "We cannot reliably extract DOORS import provenance with the available RDF patterns: package import queries for DOORS/APS return no data, and requirement metadata search for 'doors' returns empty. However, earlier exploration clearly shows likely top-level APS documents such as 'TMT-APS DDD' and 'TMT-APS Use Cases'. Without DOORS linkage, we will answer with the best available top-level APS document candidates containing APS requirements (from the model’s document names).",
+          "confidence": 0.33
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 28,
+        "kind": "llm_call",
+        "callId": "llm_0015",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 15400,
+          "outputTokens": 203,
+          "totalTokens": 15603
+        },
+        "durationMs": 1560,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_AVYJwSPTlhBCEg97TmfuFjvk",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 29,
+        "kind": "tool_exec",
+        "toolCallId": "call_AVYJwSPTlhBCEg97TmfuFjvk",
+        "parentCallId": "llm_0015",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "The model does not expose any explicit “DOORS → APS” import linkage in a way that can be queried (searching for vocab:package import with importedPackage containing “DOORS/APS” returned no results, and searching tmt:requirement metadata for “doors” also returned none).\n\nFrom the available model structure, the closest top-level APS requirement documents present in the graph are:\n- **TMT-APS DDD** (document: `TMT::Project::Work Packages::...::TMT-APS-SE::TMT-APS DDD`)\n- **TMT-APS Use Cases** (document: `...::TMT-APS-SE::TMT-APS Use Cases`)\n\nThese are the top-level APS documents that contain APS-related requirement/spec content in the model, but the specific DOORS import provenance can’t be confirmed with the current RDF patterns."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 30,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-04-01T16:30:08.120Z",
+        "status": "OK",
+        "finalAnswer": "The model does not expose any explicit “DOORS → APS” import linkage in a way that can be queried (searching for vocab:package import with importedPackage containing “DOORS/APS” returned no results, and searching tmt:requirement metadata for “doors” also returned none).\n\nFrom the available model structure, the closest top-level APS requirement documents present in the graph are:\n- **TMT-APS DDD** (document: `TMT::Project::Work Packages::...::TMT-APS-SE::TMT-APS DDD`)\n- **TMT-APS Use Cases** (document: `...::TMT-APS-SE::TMT-APS Use Cases`)\n\nThese are the top-level APS documents that contain APS-related requirement/spec content in the model, but the specific DOORS import provenance can’t be confirmed with the current RDF patterns.",
+        "afterCallId": "llm_0015"
+      }
+    ],
+    "counts": {
+      "llmCalls": 15,
+      "toolExecs": 15
+    }
+  }
+}

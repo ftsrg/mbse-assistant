@@ -1,0 +1,261 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q193",
+    "question": "Which models in the organization include tasks about bike rental or insurance? (Organization ID: 67e70970f0404a7e87122700ad26d87b)",
+    "durationMs": 20824,
+    "status": "OK",
+    "finalAnswer": "In organization Org35 (ID: 67e70970f0404a7e87122700ad26d87b), only **one model** contains tasks about bike rental or insurance:\n\n**Model: \"Bike rental spezzato\"**\n\nThis model includes 6 tasks related to bike rental and insurance:\n1. \"Return bike back\"\n2. \"Estimate insurance cost\"\n3. \"Give bike\"\n4. \"Pay bike\"\n5. \"Request insurance\"\n6. \"Pay insurance\"\n\nNo other models in this organization contain tasks with \"bike\" or \"insurance\" in their names.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 51112,
+      "outputTokens": 1407,
+      "totalTokens": 52519
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6663,
+          "outputTokens": 324,
+          "totalTokens": 6987
+        },
+        "durationMs": 5096,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_11dd3cc8cb5844539c79ea0e",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_11dd3cc8cb5844539c79ea0e",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 8,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?org ?orgLabel ?model ?modelName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"67e70970f0404a7e87122700ad26d87b\" .\n  OPTIONAL { ?org rdfs:label ?orgLabel . }\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n  ?model bbo:name ?modelName .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 13
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8002,
+          "outputTokens": 222,
+          "totalTokens": 8224
+        },
+        "durationMs": 3272,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_ba92a2cb2d054413ae8b663d",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_ba92a2cb2d054413ae8b663d",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 2,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 13,
+          "decision": "retry",
+          "reason": "Found 13 models in the organization. I can see \"Bike rental spezzato\" model which likely contains bike rental tasks. Now I need to search for tasks containing \"bike\" or \"insurance\" in their names across all models in this organization to find which models include such tasks.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8174,
+          "outputTokens": 372,
+          "totalTokens": 8546
+        },
+        "durationMs": 4192,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_1f3e9fcf9d7f46549ef68c21",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_1f3e9fcf9d7f46549ef68c21",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 11,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?model ?modelName ?task ?taskName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"67e70970f0404a7e87122700ad26d87b\" .\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n  ?model bbo:name ?modelName .\n  ?definitions a bboExt:Definitions .\n  ?definitions tai:belongsTo ?model .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?definitions .\n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n  ?task bbo:name ?taskName .\n  FILTER(CONTAINS(LCASE(STR(?taskName)), \"bike\") || CONTAINS(LCASE(STR(?taskName)), \"insurance\"))\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 6
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9245,
+          "outputTokens": 167,
+          "totalTokens": 9412
+        },
+        "durationMs": 2566,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_b8ea78e18eb6420082c26938",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_b8ea78e18eb6420082c26938",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 6,
+          "decision": "finalize",
+          "reason": "Found 6 tasks related to bike rental or insurance, all belonging to the \"Bike rental spezzato\" model. The tasks include: \"Return bike back\", \"Estimate insurance cost\", \"Give bike\", \"Pay bike\", \"Request insurance\", and \"Pay insurance\". This is the only model in the organization that contains tasks about bike rental or insurance.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9431,
+          "outputTokens": 147,
+          "totalTokens": 9578
+        },
+        "durationMs": 2507,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_aaf7eae2414d400eb93397d7",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_aaf7eae2414d400eb93397d7",
+        "parentCallId": "llm_0005",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "decision": "finalize",
+          "reason": "Query completed successfully. Found one model \"Bike rental spezzato\" in organization Org35 (ID: 67e70970f0404a7e87122700ad26d87b) that contains 6 tasks related to bike rental or insurance.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9597,
+          "outputTokens": 175,
+          "totalTokens": 9772
+        },
+        "durationMs": 3139,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_27d6df01f9224f52a56b22ca",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_27d6df01f9224f52a56b22ca",
+        "parentCallId": "llm_0006",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "In organization Org35 (ID: 67e70970f0404a7e87122700ad26d87b), only **one model** contains tasks about bike rental or insurance:\n\n**Model: \"Bike rental spezzato\"**\n\nThis model includes 6 tasks related to bike rental and insurance:\n1. \"Return bike back\"\n2. \"Estimate insurance cost\"\n3. \"Give bike\"\n4. \"Pay bike\"\n5. \"Request insurance\"\n6. \"Pay insurance\"\n\nNo other models in this organization contain tasks with \"bike\" or \"insurance\" in their names."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T10:48:30.674Z",
+        "status": "OK",
+        "finalAnswer": "In organization Org35 (ID: 67e70970f0404a7e87122700ad26d87b), only **one model** contains tasks about bike rental or insurance:\n\n**Model: \"Bike rental spezzato\"**\n\nThis model includes 6 tasks related to bike rental and insurance:\n1. \"Return bike back\"\n2. \"Estimate insurance cost\"\n3. \"Give bike\"\n4. \"Pay bike\"\n5. \"Request insurance\"\n6. \"Pay insurance\"\n\nNo other models in this organization contain tasks with \"bike\" or \"insurance\" in their names.",
+        "afterCallId": "llm_0006"
+      }
+    ],
+    "counts": {
+      "llmCalls": 6,
+      "toolExecs": 6
+    }
+  }
+}

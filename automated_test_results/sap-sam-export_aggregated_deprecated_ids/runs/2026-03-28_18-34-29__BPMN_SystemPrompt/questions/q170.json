@@ -1,0 +1,348 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q170",
+    "question": "Which organizations include models about healthcare or medical device processes?",
+    "durationMs": 16179,
+    "status": "OK",
+    "finalAnswer": "Organizations that include models about healthcare/medical-device processes (matched by model name keywords):\n\n- **Org65** — model **“Doctor-patient recipe”** (model ID: `sid_2e9428a6_0801_4e88_8210_c6bc2f1c40da`).",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 56973,
+      "outputTokens": 2158,
+      "totalTokens": 59131
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 5872,
+          "outputTokens": 333,
+          "totalTokens": 6205
+        },
+        "durationMs": 2106,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_3dpcRojrzxDa6DhYkZAVYMxv",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_3dpcRojrzxDa6DhYkZAVYMxv",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 7,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?org ?orgName ?modelName ?corpusId WHERE {\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  OPTIONAL { ?org rdfs:label ?orgName . }\n  OPTIONAL {\n    ?corpus a bboExt:Corpus .\n    ?corpus bbo:name ?corpusId .\n  }\n  FILTER(\n    CONTAINS(LCASE(STR(?modelName)), \"health\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"medical\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"device\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"medicine\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"clinical\")\n  )\n} \nORDER BY ?orgName ?modelName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6246,
+          "outputTokens": 165,
+          "totalTokens": 6411
+        },
+        "durationMs": 2424,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_NzU1VvgKMT8WYEamq1crE47x",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_NzU1VvgKMT8WYEamq1crE47x",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "errorType": "empty",
+          "message": "The query returned no models whose model bbo:name contains the chosen keyword set (health/medical/device/medicine/clinical). This suggests either the relevant processes are labeled differently, or the dataset uses other name properties/fields for those domain terms.",
+          "decision": "retry",
+          "reason": "Try discovering the actual label fields used for model-domain keywords by searching across all rdfs:label and bbo:name at both organization and model levels. Use a broader keyword set including 'hospital', 'patient', 'pharma', 'surgery', and also search within organization names, not only model names, then aggregate organizations.",
+          "confidence": 0.62
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6428,
+          "outputTokens": 478,
+          "totalTokens": 6906
+        },
+        "durationMs": 2826,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_orqS57zpGnxps2mluq5MKSSr",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_orqS57zpGnxps2mluq5MKSSr",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 16,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?org ?orgName ?modelName ?modelId WHERE {\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n\n  ?model bbo:name ?modelName .\n  OPTIONAL { ?org rdfs:label ?orgName . }\n  OPTIONAL { ?model tai:normalizedId ?modelId . }\n\n  FILTER(\n    CONTAINS(LCASE(STR(?modelName)), \"health\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"medical\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"device\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"medicine\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"clinical\") ||\n    CONTAINS(LCASE(STR(?orgName)), \"health\") ||\n    CONTAINS(LCASE(STR(?orgName)), \"medical\") ||\n    CONTAINS(LCASE(STR(?orgName)), \"device\") ||\n    CONTAINS(LCASE(STR(?orgName)), \"medicine\") ||\n    CONTAINS(LCASE(STR(?orgName)), \"clinical\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"patient\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"hospital\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"surgery\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"pharma\")\n  )\n}\nORDER BY ?orgName ?modelName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7019,
+          "outputTokens": 161,
+          "totalTokens": 7180
+        },
+        "durationMs": 1415,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_p0Z0KOHInmibJY5tDEhECOgR",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_p0Z0KOHInmibJY5tDEhECOgR",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 1,
+          "errorType": "",
+          "message": "At least one matching model exists: 'Doctor-patient recipe' under organization Org65. However, the query is likely under-inclusive (only model/organization labels), so we should broaden the search to choreography/task/participant text labels to capture more healthcare-related processes, then map back to their organizations.",
+          "decision": "retry",
+          "reason": "The question asks for organizations that include models about healthcare or medical device processes; we should not rely solely on model titles. Next, search within element-level bbo:name text for healthcare/device-related keywords within each model's choreography, then return distinct organizations for those models.",
+          "confidence": 0.7
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7197,
+          "outputTokens": 670,
+          "totalTokens": 7867
+        },
+        "durationMs": 3779,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_nHcC3ybNaLRS1ZvReaQvnnEq",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_nHcC3ybNaLRS1ZvReaQvnnEq",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 10,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?org ?orgName ?modelName ?taskName ?participantName WHERE {\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n  OPTIONAL { ?org rdfs:label ?orgName . }\n  ?model bbo:name ?modelName .\n  ?choreo a bboExt:Choreography .\n  ?task tai:belongsTo ?choreo .\n  ?choreo tai:belongsTo ?model .\n\n  OPTIONAL {\n    ?task bbo:name ?taskName .\n    ?task a bboExt:ChoreographyTask .\n  }\n  OPTIONAL {\n    ?task bboExt:initiatingParticipantRef ?partRef .\n    ?participant a bboExt:Participant ;\n      tai:belongsTo ?choreo ;\n      bbo:name ?participantName .\n    FILTER(STRENDS(STR(?participant), ?partRef))\n  }\n\n  FILTER(\n    CONTAINS(LCASE(STR(?modelName)), \"health\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"medical\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"device\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"patient\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"hospital\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"pharma\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"surgery\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"health\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"medical\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"device\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"patient\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"hospital\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"pharma\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"surgery\") ||\n    CONTAINS(LCASE(STR(?participantName)), \"patient\") ||\n    CONTAINS(LCASE(STR(?participantName)), \"doctor\") ||\n    CONTAINS(LCASE(STR(?participantName)), \"hospital\")\n  )\n}\nORDER BY ?orgName ?modelName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7910,
+          "outputTokens": 164,
+          "totalTokens": 8074
+        },
+        "durationMs": 1333,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_kxNKV4NFxmI5J1uMwhqf5iK7",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_kxNKV4NFxmI5J1uMwhqf5iK7",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "errorType": "empty",
+          "message": "The broadened element-level keyword search returned no rows, likely due to missing task/participant bbo:name coverage or because the choreography container/tai:belongsTo path used doesn't match how choreographies are linked to models in this dataset. Since we already found one healthcare-likely model via model title, we can finalize with the organizations found, and report the model title as evidence.",
+          "decision": "finalize",
+          "reason": "We have at least one concrete match (Org65 / 'Doctor-patient recipe'). Further exploration using element-level names failed, so we will answer using the reliable model-title matches.",
+          "confidence": 0.66
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8091,
+          "outputTokens": 102,
+          "totalTokens": 8193
+        },
+        "durationMs": 999,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_9W3T6LZcrYQmgAIH9b2UUiYy",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_9W3T6LZcrYQmgAIH9b2UUiYy",
+        "parentCallId": "llm_0007",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "rowCount": 1,
+          "errorType": "",
+          "message": "Answer will include the organization(s) identified by model-title keyword matching: Org65 with model 'Doctor-patient recipe'. No additional organizations could be confirmed via element-level name search.",
+          "decision": "finalize",
+          "reason": "Finalize with the single confirmed organization-model pair from results; additional searches did not return further matches.",
+          "confidence": 0.66
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "llm_call",
+        "callId": "llm_0008",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8210,
+          "outputTokens": 85,
+          "totalTokens": 8295
+        },
+        "durationMs": 1227,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_w1nuBAMuwWPnzz0rPbG9UXjU",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 15,
+        "kind": "tool_exec",
+        "toolCallId": "call_w1nuBAMuwWPnzz0rPbG9UXjU",
+        "parentCallId": "llm_0008",
+        "toolName": "final_answer",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "answer": "Organizations that include models about healthcare/medical-device processes (matched by model name keywords):\n\n- **Org65** — model **“Doctor-patient recipe”** (model ID: `sid_2e9428a6_0801_4e88_8210_c6bc2f1c40da`)."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 16,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-28T18:45:25.383Z",
+        "status": "OK",
+        "finalAnswer": "Organizations that include models about healthcare/medical-device processes (matched by model name keywords):\n\n- **Org65** — model **“Doctor-patient recipe”** (model ID: `sid_2e9428a6_0801_4e88_8210_c6bc2f1c40da`).",
+        "afterCallId": "llm_0008"
+      }
+    ],
+    "counts": {
+      "llmCalls": 8,
+      "toolExecs": 8
+    }
+  }
+}

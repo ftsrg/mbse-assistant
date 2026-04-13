@@ -1,0 +1,305 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q036",
+    "question": "What modeling suport patterns are used in the model?",
+    "durationMs": 12558,
+    "status": "OK",
+    "finalAnswer": "Modeling support patterns used (named pattern artifacts found in the RDF model):\n\n- **Trade Study Pattern** (block)\n- **Roll-up Pattern** (package)\n- **MassRollUpPattern** (block)\n- **PowerRollUpPattern** (block)\n- **ErrorRollUpPatternElement** (block)\n\nAlso present as additional pattern-related packages:\n- **Patterns for Pattern factory** (package)\n- **pattern: refines** (package)\n- **pattern: requirement** (package)",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 92904,
+      "outputTokens": 1230,
+      "totalTokens": 94134
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9282,
+          "outputTokens": 194,
+          "totalTokens": 9476
+        },
+        "durationMs": 1514,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_Bs1NJfJYoItfkGKAYuCAGAha",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_Bs1NJfJYoItfkGKAYuCAGAha",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 4,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?pattern ?name WHERE {\n  { \n    ?pattern rdf:type vocab:sequencer .\n  } UNION {\n    ?pattern rdf:type vocab:integration .\n  } UNION {\n    ?pattern rdf:type vocab:alloc .\n  } UNION {\n    ?pattern rdf:type vocab:dependency .\n  } UNION {\n    ?pattern rdf:type vocab:assembly .\n  }\n  OPTIONAL { ?pattern vocab:NamedElement_name ?name . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 25
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10937,
+          "outputTokens": 217,
+          "totalTokens": 11154
+        },
+        "durationMs": 1643,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_hr6b5SreqOP2HF6fAsyELNN8",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_hr6b5SreqOP2HF6fAsyELNN8",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 25,
+          "errorType": "",
+          "message": "The query returned a mix of named pattern-like elements (notably multiple “Sequencer” design realizations) plus several unnamed dependency nodes. However, the rdf:type values attempted (sequencer/integration/alloc/assembly/dependency) are not reliably mapped to “modeling support patterns” in the dataset schema. A better approach is to discover pattern classes explicitly by searching for elements whose names or types indicate “pattern” usage.",
+          "decision": "retry",
+          "reason": "We likely need a different discovery strategy: first find candidate named elements containing terms like “pattern”, then inspect their types. Alternatively, search for known support pattern types if they exist in vocab; the current guess seems incorrect due to many dependency nodes. We should run an exploration query based on name matching (e.g., contains 'pattern') with a limit, then map their properties/types, then produce a targeted list.",
+          "confidence": 0.55
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 11171,
+          "outputTokens": 148,
+          "totalTokens": 11319
+        },
+        "durationMs": 1482,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_aLnfNf9ZpfHFZKri2moM3Ktv",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_aLnfNf9ZpfHFZKri2moM3Ktv",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 23,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?elem ?type ?name WHERE {\n  ?elem vocab:NamedElement_name ?name .\n  FILTER(\n    CONTAINS(LCASE(STR(?name)), LCASE(\"pattern\"))\n  )\n  ?elem rdf:type ?type .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 25
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 14935,
+          "outputTokens": 202,
+          "totalTokens": 15137
+        },
+        "durationMs": 1619,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_U0iJkVGHv9GiLzLiptTIIxLr",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_U0iJkVGHv9GiLzLiptTIIxLr",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 25,
+          "errorType": "",
+          "message": "The name-based discovery found many concrete “pattern” artifacts, including packages/blocks named “Roll-up Pattern” and its instances, plus higher-level “Trade Study Pattern”. This strongly suggests the model explicitly contains named modeling-support patterns via elements whose names include the word “Pattern”. Next we should run a final targeted query to list the distinct top-level pattern names (e.g., blocks/packages directly under Modeling Support) rather than all instance specifications.",
+          "decision": "retry",
+          "reason": "We have evidence of modeling support patterns but the result set is noisy (many instance specifications containing 'massRollUpPattern' in long names). A more targeted third-step query should extract distinct pattern blueprint elements (packages/blocks) with short pattern names, likely under 'Modeling Support' and excluding instance%20specification types.",
+          "confidence": 0.68
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 15154,
+          "outputTokens": 177,
+          "totalTokens": 15331
+        },
+        "durationMs": 1416,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_XnnRB8xJEXLFRDhxto9AUEsM",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_XnnRB8xJEXLFRDhxto9AUEsM",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 10,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?patternType ?patternName WHERE {\n  ?pattern rdf:type ?patternType ;\n           vocab:NamedElement_name ?patternName .\n\n  FILTER(CONTAINS(LCASE(STR(?patternName)), LCASE(\"pattern\")))\n  FILTER(\n    (?patternType = vocab:block || ?patternType = vocab:package)\n  )\n}\nORDER BY ?patternType ?patternName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 9
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 15623,
+          "outputTokens": 162,
+          "totalTokens": 15785
+        },
+        "durationMs": 3584,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_p6Ab3MYultw8XwaNLL8occnQ",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_p6Ab3MYultw8XwaNLL8occnQ",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 9,
+          "errorType": "",
+          "message": "We now have a clean, distinct list of pattern-related modeling-support artifacts limited to blocks and packages whose names include “pattern”. These include both roll-up pattern variants (mass/power/error) and a higher-level trade study pattern, plus a small pattern metadata package set. This directly answers the question about what modeling support patterns are used, so we can finalize with examples.",
+          "decision": "finalize",
+          "reason": "The targeted query returned distinct pattern blocks/packages (9 total) with clear names. These names correspond to the modeling-support pattern artifacts used in the model, so we can present them directly with examples.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 15802,
+          "outputTokens": 130,
+          "totalTokens": 15932
+        },
+        "durationMs": 1225,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_K1h4Aq3IQzEsG0mIwo0R8ohc",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_K1h4Aq3IQzEsG0mIwo0R8ohc",
+        "parentCallId": "llm_0007",
+        "toolName": "final_answer",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "answer": "Modeling support patterns used (named pattern artifacts found in the RDF model):\n\n- **Trade Study Pattern** (block)\n- **Roll-up Pattern** (package)\n- **MassRollUpPattern** (block)\n- **PowerRollUpPattern** (block)\n- **ErrorRollUpPatternElement** (block)\n\nAlso present as additional pattern-related packages:\n- **Patterns for Pattern factory** (package)\n- **pattern: refines** (package)\n- **pattern: requirement** (package)"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-04-02T01:29:08.822Z",
+        "status": "OK",
+        "finalAnswer": "Modeling support patterns used (named pattern artifacts found in the RDF model):\n\n- **Trade Study Pattern** (block)\n- **Roll-up Pattern** (package)\n- **MassRollUpPattern** (block)\n- **PowerRollUpPattern** (block)\n- **ErrorRollUpPatternElement** (block)\n\nAlso present as additional pattern-related packages:\n- **Patterns for Pattern factory** (package)\n- **pattern: refines** (package)\n- **pattern: requirement** (package)",
+        "afterCallId": "llm_0007"
+      }
+    ],
+    "counts": {
+      "llmCalls": 7,
+      "toolExecs": 7
+    }
+  }
+}

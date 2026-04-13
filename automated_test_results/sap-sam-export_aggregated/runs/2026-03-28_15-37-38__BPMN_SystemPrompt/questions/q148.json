@@ -1,0 +1,337 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q148",
+    "question": "Which organizations contain models related to restaurants?",
+    "durationMs": 31699,
+    "status": "OK",
+    "finalAnswer": "Two organizations contain models related to restaurants:\n\n1. **Org53** - Contains a model named \"Restaurant\"\n\n2. **Org2** - Contains a Polish food ordering model titled \"Jane Doe_ZAMAWIANIE_JEDZENIA_ZA_POŚREDNICTWEM_SERWISU_PYSZNE.PL_Z_WYKORZYSTANIEM_USŁUG_UBER_EATS(choreography)\" which includes choreography tasks mentioning restaurants, such as:\n   - \"Estimate the delivery time & Send order to the restaurant\"\n   - \"Driver arrives at the restaurant\"\n   - \"Send information about order being accepted by the restaurant\"\n   - \"Take order from the restaurant & deliver it\"",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 61075,
+      "outputTokens": 1607,
+      "totalTokens": 62682
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6621,
+          "outputTokens": 272,
+          "totalTokens": 6893
+        },
+        "durationMs": 4976,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_4562807b19c940f795585713",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_4562807b19c940f795585713",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?model ?modelName ?org ?orgLabel WHERE {\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  ?org a bboExt:Organization .\n  OPTIONAL { ?org rdfs:label ?orgLabel . }\n  FILTER(CONTAINS(LCASE(STR(?modelName)), \"restaurant\"))\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6948,
+          "outputTokens": 186,
+          "totalTokens": 7134
+        },
+        "durationMs": 4577,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_77285fb08c0f4df0838a2c0c",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_77285fb08c0f4df0838a2c0c",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 1,
+          "decision": "retry",
+          "reason": "Found one model named \"Restaurant\" in Org53. Need to explore further to check if there are more restaurant-related models with different naming patterns (e.g., partial matches, different spellings) or other organizations.",
+          "confidence": 0.7
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7103,
+          "outputTokens": 305,
+          "totalTokens": 7408
+        },
+        "durationMs": 6177,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_8e7eddc13ac141d1abe844ae",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_8e7eddc13ac141d1abe844ae",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 12,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?org ?orgLabel ?modelName WHERE {\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  ?org a bboExt:Organization .\n  OPTIONAL { ?org rdfs:label ?orgLabel . }\n  FILTER(\n    CONTAINS(LCASE(STR(?modelName)), \"restaurant\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"food\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"dining\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"cafe\") ||\n    CONTAINS(LCASE(STR(?modelName)), \"kitchen\")\n  )\n}\nORDER BY ?orgLabel\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7454,
+          "outputTokens": 135,
+          "totalTokens": 7589
+        },
+        "durationMs": 3187,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_2de55355d8e2496baba9f4f8",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_2de55355d8e2496baba9f4f8",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 1,
+          "decision": "retry",
+          "reason": "Only found one model \"Restaurant\" in Org53 with common food-related terms. Should also check choreography tasks and elements within models for restaurant-related content, as the model name itself might not contain the keyword.",
+          "confidence": 0.6
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7608,
+          "outputTokens": 297,
+          "totalTokens": 7905
+        },
+        "durationMs": 4870,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_1c98f52692344e4490f720d5",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_1c98f52692344e4490f720d5",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 18,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?org ?orgLabel ?modelName ?taskName WHERE {\n  ?task a bboExt:ChoreographyTask .\n  ?task bbo:name ?taskName .\n  ?task tai:belongsTo ?choreo .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  ?defs a bboExt:Definitions .\n  ?defs tai:belongsTo ?model .\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  ?org a bboExt:Organization .\n  OPTIONAL { ?org rdfs:label ?orgLabel . }\n  FILTER(CONTAINS(LCASE(STR(?taskName)), \"restaurant\"))\n}\nORDER BY ?orgLabel\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 4
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8306,
+          "outputTokens": 137,
+          "totalTokens": 8443
+        },
+        "durationMs": 2472,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_8f37ff8d2e4a46e49dcfa79b",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_8f37ff8d2e4a46e49dcfa79b",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 4,
+          "decision": "finalize",
+          "reason": "Found restaurant-related content in two organizations: Org53 (with a model named \"Restaurant\") and Org2 (with a Polish food ordering model containing tasks mentioning \"restaurant\"). This covers both model names and task-level content.",
+          "confidence": 0.9
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8462,
+          "outputTokens": 92,
+          "totalTokens": 8554
+        },
+        "durationMs": 3067,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_ba8a52e523024632b94f7ce0",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_ba8a52e523024632b94f7ce0",
+        "parentCallId": "llm_0007",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "decision": "finalize",
+          "reason": "Ready to provide final answer with the two organizations containing restaurant-related models.",
+          "confidence": 0.9
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "llm_call",
+        "callId": "llm_0008",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8573,
+          "outputTokens": 183,
+          "totalTokens": 8756
+        },
+        "durationMs": 2297,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_a97211714c224e5687b4bec8",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 15,
+        "kind": "tool_exec",
+        "toolCallId": "call_a97211714c224e5687b4bec8",
+        "parentCallId": "llm_0008",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Two organizations contain models related to restaurants:\n\n1. **Org53** - Contains a model named \"Restaurant\"\n\n2. **Org2** - Contains a Polish food ordering model titled \"Jane Doe_ZAMAWIANIE_JEDZENIA_ZA_POŚREDNICTWEM_SERWISU_PYSZNE.PL_Z_WYKORZYSTANIEM_USŁUG_UBER_EATS(choreography)\" which includes choreography tasks mentioning restaurants, such as:\n   - \"Estimate the delivery time & Send order to the restaurant\"\n   - \"Driver arrives at the restaurant\"\n   - \"Send information about order being accepted by the restaurant\"\n   - \"Take order from the restaurant & deliver it\""
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 16,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-28T17:07:29.636Z",
+        "status": "OK",
+        "finalAnswer": "Two organizations contain models related to restaurants:\n\n1. **Org53** - Contains a model named \"Restaurant\"\n\n2. **Org2** - Contains a Polish food ordering model titled \"Jane Doe_ZAMAWIANIE_JEDZENIA_ZA_POŚREDNICTWEM_SERWISU_PYSZNE.PL_Z_WYKORZYSTANIEM_USŁUG_UBER_EATS(choreography)\" which includes choreography tasks mentioning restaurants, such as:\n   - \"Estimate the delivery time & Send order to the restaurant\"\n   - \"Driver arrives at the restaurant\"\n   - \"Send information about order being accepted by the restaurant\"\n   - \"Take order from the restaurant & deliver it\"",
+        "afterCallId": "llm_0008"
+      }
+    ],
+    "counts": {
+      "llmCalls": 8,
+      "toolExecs": 8
+    }
+  }
+}

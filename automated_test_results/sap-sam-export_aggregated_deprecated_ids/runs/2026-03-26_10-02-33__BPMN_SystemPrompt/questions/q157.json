@@ -1,0 +1,149 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q157",
+    "question": "Which models of the organization include financial tasks?  (Organization ID: 38b17e822a5e4307ae051694293e4d0f)",
+    "durationMs": 9373,
+    "status": "OK",
+    "finalAnswer": "Models in organization **38b17e822a5e4307ae051694293e4d0f** that include **financial tasks** (detected via task-name keywords like *pay, payment, invoice, bank, finance, loan, credit*):\n\n1. **Travel Agency Choreography** (created **2019-04-26T14:58:15**) \n   - originalId: **2f362cad9430480c9c054a29eb71ae07**\n   - normalizedId: **sid_7587b36b_ea62_4f16_9d3a_a151fb21e145**\n2. **Travel Agency** (created **2019-04-26T14:46:52**) \n   - originalId: **fa1ab640cc1946a2920d933812e348de**\n   - normalizedId: **sid_d4c8d756_07f5_4f53_b9c1_e5841f44bd65**\n3. **Choreography** (created **2019-04-26T12:56:27**) \n   - originalId: **1af04f24101f40f7ae51b7195ffb6882**\n   - normalizedId: **sid_6aff5cab_5e98_4188_a1ac_32801e4463a1**\n4. **Travel agency** (created **2018-04-27T11:06:39**) \n   - originalId: **2c7dd024a2b24880b562cbfb68474512**\n   - normalizedId: **sid_7be888e4_d336_4ea1_b34d_c33cc0305a62**",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 20001,
+      "outputTokens": 1145,
+      "totalTokens": 21146
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 5896,
+          "outputTokens": 563,
+          "totalTokens": 6459
+        },
+        "durationMs": 3907,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_uuIwCIedtPQp3Qq4boBfoocn",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_uuIwCIedtPQp3Qq4boBfoocn",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 576,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT\n  ?model\n  ?modelName\n  ?modelCreated\n  ?originalId\n  ?normalizedId\nWHERE {\n  ?org a bboExt:Organization ;\n       tai:organizationId \"38b17e822a5e4307ae051694293e4d0f\" .\n  ?model a bboExt:Model ;\n         tai:belongsTo ?org ;\n         bbo:name ?modelName ;\n         tai:modelCreated ?modelCreated ;\n         tai:originalId ?originalId ;\n         tai:normalizedId ?normalizedId .\n\n  # financial task heuristic: tasks with name containing common financial keywords\n  ?choreo a bboExt:Choreography .\n  ?task a bboExt:ChoreographyTask ;\n        tai:belongsTo ?choreo ;\n        bbo:name ?taskName .\n  FILTER(\n    EXISTS {\n      FILTER(CONTAINS(LCASE(STR(?taskName)), \"pay\"))\n    }\n    || EXISTS {\n      FILTER(CONTAINS(LCASE(STR(?taskName)), \"payment\"))\n    }\n    || EXISTS {\n      FILTER(CONTAINS(LCASE(STR(?taskName)), \"invoice\"))\n    }\n    || EXISTS {\n      FILTER(CONTAINS(LCASE(STR(?taskName)), \"bank\"))\n    }\n    || EXISTS {\n      FILTER(CONTAINS(LCASE(STR(?taskName)), \"finance\"))\n    }\n    || EXISTS {\n      FILTER(CONTAINS(LCASE(STR(?taskName)), \"loan\"))\n    }\n    || EXISTS {\n      FILTER(CONTAINS(LCASE(STR(?taskName)), \"credit\"))\n    }\n  )\n\n  FILTER EXISTS {\n    ?defs tai:belongsTo ?model .\n    ?choreo tai:belongsTo ?defs .\n  }\n}\nORDER BY DESC(?modelCreated)\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 4
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6958,
+          "outputTokens": 172,
+          "totalTokens": 7130
+        },
+        "durationMs": 1692,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_pomRE7LqZjfoUTZXRS3Lfb4N",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_pomRE7LqZjfoUTZXRS3Lfb4N",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 4,
+          "errorType": "",
+          "message": "The query matched 4 distinct models under organizationId 38b17e822a5e4307ae051694293e4d0f that contain choreography tasks whose names include common financial keywords (e.g., pay/payment/invoice/bank/finance/loan/credit). Each result includes model name and creation timestamps, so we can directly answer which models include financial tasks.",
+          "decision": "finalize",
+          "reason": "We found concrete model instances (4) and they satisfy the user’s constraint (belonging to the specified organization) plus a reasonable financial-task keyword heuristic in task names. No further refinement is required to list the models requested.",
+          "confidence": 0.74
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7147,
+          "outputTokens": 410,
+          "totalTokens": 7557
+        },
+        "durationMs": 3179,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_aPyF5bLOely81fruQgBdhtgs",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_aPyF5bLOely81fruQgBdhtgs",
+        "parentCallId": "llm_0003",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Models in organization **38b17e822a5e4307ae051694293e4d0f** that include **financial tasks** (detected via task-name keywords like *pay, payment, invoice, bank, finance, loan, credit*):\n\n1. **Travel Agency Choreography** (created **2019-04-26T14:58:15**) \n   - originalId: **2f362cad9430480c9c054a29eb71ae07**\n   - normalizedId: **sid_7587b36b_ea62_4f16_9d3a_a151fb21e145**\n2. **Travel Agency** (created **2019-04-26T14:46:52**) \n   - originalId: **fa1ab640cc1946a2920d933812e348de**\n   - normalizedId: **sid_d4c8d756_07f5_4f53_b9c1_e5841f44bd65**\n3. **Choreography** (created **2019-04-26T12:56:27**) \n   - originalId: **1af04f24101f40f7ae51b7195ffb6882**\n   - normalizedId: **sid_6aff5cab_5e98_4188_a1ac_32801e4463a1**\n4. **Travel agency** (created **2018-04-27T11:06:39**) \n   - originalId: **2c7dd024a2b24880b562cbfb68474512**\n   - normalizedId: **sid_7be888e4_d336_4ea1_b34d_c33cc0305a62**"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T10:10:37.443Z",
+        "status": "OK",
+        "finalAnswer": "Models in organization **38b17e822a5e4307ae051694293e4d0f** that include **financial tasks** (detected via task-name keywords like *pay, payment, invoice, bank, finance, loan, credit*):\n\n1. **Travel Agency Choreography** (created **2019-04-26T14:58:15**) \n   - originalId: **2f362cad9430480c9c054a29eb71ae07**\n   - normalizedId: **sid_7587b36b_ea62_4f16_9d3a_a151fb21e145**\n2. **Travel Agency** (created **2019-04-26T14:46:52**) \n   - originalId: **fa1ab640cc1946a2920d933812e348de**\n   - normalizedId: **sid_d4c8d756_07f5_4f53_b9c1_e5841f44bd65**\n3. **Choreography** (created **2019-04-26T12:56:27**) \n   - originalId: **1af04f24101f40f7ae51b7195ffb6882**\n   - normalizedId: **sid_6aff5cab_5e98_4188_a1ac_32801e4463a1**\n4. **Travel agency** (created **2018-04-27T11:06:39**) \n   - originalId: **2c7dd024a2b24880b562cbfb68474512**\n   - normalizedId: **sid_7be888e4_d336_4ea1_b34d_c33cc0305a62**",
+        "afterCallId": "llm_0003"
+      }
+    ],
+    "counts": {
+      "llmCalls": 3,
+      "toolExecs": 3
+    }
+  }
+}

@@ -1,0 +1,261 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q159",
+    "question": "List all organizations that have models about restaurants.",
+    "durationMs": 32082,
+    "status": "OK",
+    "finalAnswer": "There are **2 organizations** that have models about restaurants:\n\n| Organization | Model Name |\n|---|---|\n| **Org2** | *Jane Doe_ZAMAWIANIE_JEDZENIA_ZA_POŚREDNICTWEM_SERWISU_PYSZNE.PL_Z_WYKORZYSTANIEM_USŁUG_UBER_EATS (choreography)* — A choreography model about ordering food via the Pyszne.pl service using Uber Eats, which contains restaurant-related elements such as participants named \"Restaurant\" and tasks like \"Send order to the restaurant\" and \"Driver arrives at the restaurant\". |\n| **Org53** | *Restaurant* — A model directly named \"Restaurant\". |",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 55936,
+      "outputTokens": 1472,
+      "totalTokens": 57408
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7772,
+          "outputTokens": 237,
+          "totalTokens": 8009
+        },
+        "durationMs": 6430,
+        "status": "OK",
+        "output": "\n\nI'll search for organizations that have models related to \"restaurant\". Let me start by exploring what models exist with \"restaurant\" in their name.",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01KRSrUMEpdoWVKopMGgnsFV",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01KRSrUMEpdoWVKopMGgnsFV",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 35,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?model ?modelName ?type WHERE {\n  ?model bbo:name ?modelName .\n  FILTER(CONTAINS(LCASE(STR(?modelName)), \"restaurant\"))\n  ?model a ?type .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 11
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8975,
+          "outputTokens": 213,
+          "totalTokens": 9188
+        },
+        "durationMs": 5409,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01AbX4xhf5197yy7wRTAF8va",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01AbX4xhf5197yy7wRTAF8va",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 11,
+          "decision": "retry",
+          "reason": "Found elements with \"restaurant\" in their names, including a Model named \"Restaurant\" and various choreography elements. Now I need to find the organizations that own models containing these restaurant-related elements. I'll search for models with \"restaurant\" in their name or models that contain elements with \"restaurant\" in their name, then trace back to organizations.",
+          "confidence": 0.6
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9205,
+          "outputTokens": 458,
+          "totalTokens": 9663
+        },
+        "durationMs": 6633,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01YGte4kbRScdYyE7vyPokjU",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01YGte4kbRScdYyE7vyPokjU",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 36,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?orgLabel ?modelName WHERE {\n  {\n    # Models directly named with \"restaurant\"\n    ?model a bboExt:Model .\n    ?model bbo:name ?modelName .\n    FILTER(CONTAINS(LCASE(STR(?modelName)), \"restaurant\"))\n    ?model tai:belongsTo ?org .\n    ?org a bboExt:Organization .\n    OPTIONAL { ?org rdfs:label ?orgLabel . }\n  }\n  UNION\n  {\n    # Models containing elements named with \"restaurant\"\n    ?elem bbo:name ?elemName .\n    FILTER(CONTAINS(LCASE(STR(?elemName)), \"restaurant\"))\n    ?elem tai:belongsTo ?choreo .\n    ?choreo a bboExt:Choreography .\n    ?choreo tai:belongsTo ?defs .\n    ?defs a bboExt:Definitions .\n    ?defs tai:belongsTo ?model .\n    ?model a bboExt:Model .\n    ?model bbo:name ?modelName .\n    ?model tai:belongsTo ?org .\n    ?org a bboExt:Organization .\n    OPTIONAL { ?org rdfs:label ?orgLabel . }\n  }\n}\nORDER BY ?orgLabel ?modelName\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 2
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9795,
+          "outputTokens": 205,
+          "totalTokens": 10000
+        },
+        "durationMs": 5697,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_012YmqmnpqLbzfBFeFwbpRZ9",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_012YmqmnpqLbzfBFeFwbpRZ9",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 2,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 2,
+          "decision": "finalize",
+          "reason": "Found 2 organizations with models about restaurants. Org2 has a model about ordering food via Pyszne.pl using Uber Eats (which contains restaurant-related elements), and Org53 has a model directly named \"Restaurant\". This fully answers the user's question.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10017,
+          "outputTokens": 138,
+          "totalTokens": 10155
+        },
+        "durationMs": 3188,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01GdMgMoBjuYgxrYrLUFfsv7",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01GdMgMoBjuYgxrYrLUFfsv7",
+        "parentCallId": "llm_0005",
+        "toolName": "decision_log",
+        "durationMs": 2,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "decision": "finalize",
+          "reason": "Two organizations found with restaurant-related models. Presenting the results now.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10172,
+          "outputTokens": 221,
+          "totalTokens": 10393
+        },
+        "durationMs": 4615,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01HJYYLRs8YFPYv5bwWU4Cys",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01HJYYLRs8YFPYv5bwWU4Cys",
+        "parentCallId": "llm_0006",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "There are **2 organizations** that have models about restaurants:\n\n| Organization | Model Name |\n|---|---|\n| **Org2** | *Jane Doe_ZAMAWIANIE_JEDZENIA_ZA_POŚREDNICTWEM_SERWISU_PYSZNE.PL_Z_WYKORZYSTANIEM_USŁUG_UBER_EATS (choreography)* — A choreography model about ordering food via the Pyszne.pl service using Uber Eats, which contains restaurant-related elements such as participants named \"Restaurant\" and tasks like \"Send order to the restaurant\" and \"Driver arrives at the restaurant\". |\n| **Org53** | *Restaurant* — A model directly named \"Restaurant\". |"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-24T16:35:12.779Z",
+        "status": "OK",
+        "finalAnswer": "There are **2 organizations** that have models about restaurants:\n\n| Organization | Model Name |\n|---|---|\n| **Org2** | *Jane Doe_ZAMAWIANIE_JEDZENIA_ZA_POŚREDNICTWEM_SERWISU_PYSZNE.PL_Z_WYKORZYSTANIEM_USŁUG_UBER_EATS (choreography)* — A choreography model about ordering food via the Pyszne.pl service using Uber Eats, which contains restaurant-related elements such as participants named \"Restaurant\" and tasks like \"Send order to the restaurant\" and \"Driver arrives at the restaurant\". |\n| **Org53** | *Restaurant* — A model directly named \"Restaurant\". |",
+        "afterCallId": "llm_0006"
+      }
+    ],
+    "counts": {
+      "llmCalls": 6,
+      "toolExecs": 6
+    }
+  }
+}

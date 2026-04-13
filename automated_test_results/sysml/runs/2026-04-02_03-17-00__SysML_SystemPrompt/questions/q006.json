@@ -1,0 +1,464 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q006",
+    "question": "What requirments are verified by the model?",
+    "durationMs": 16381,
+    "status": "OK",
+    "finalAnswer": "The model contains many elements typed as **vocab:tmt%20requirement**, but the specific “verified by the model” links do not appear to be encoded using **vocab:verify** (or vocab:verify nodes with Dependency_supplier/client) in the way initially assumed.\n\nWhat we *can* extract from the graph is that **tmt:requirements participate in vocab:dependency links** (used as traceability/customization links). Examples of requirements found in those dependency-connected results include:\n- **“FOV”**\n- **“Segment Measurement Error after AO”**\n- **“APS GUI with engineering data”**\n- **“Component Functional Conditions”**\n- **“Applicable Documents”**\n- **“Overall Description”**\n\nIn these extracted results, each requirement is linked via **vocab:dependency** to other model elements (often “Derived Properties … Traceability” related elements).",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 125599,
+      "outputTokens": 1901,
+      "totalTokens": 127500
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9282,
+          "outputTokens": 159,
+          "totalTokens": 9441
+        },
+        "durationMs": 1394,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_k8NZPt6IQfdJ1VDXci8d2gyg",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_k8NZPt6IQfdJ1VDXci8d2gyg",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 4,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?req ?reqName WHERE {\n  ?verifyDep rdf:type vocab:verify .\n  ?verifyDep vocab:Dependency_supplier ?req .\n  ?req rdf:type vocab:tmt%20requirement .\n  OPTIONAL { ?req vocab:NamedElement_name ?reqName . }\n}\nORDER BY ?reqName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9475,
+          "outputTokens": 137,
+          "totalTokens": 9612
+        },
+        "durationMs": 1209,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_0mtIKJUGl8q81pbwyggJUSiq",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_0mtIKJUGl8q81pbwyggJUSiq",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "errorType": "empty",
+          "message": "No resources matched the assumed verify/dependency shape. This likely means the model encodes verification relationships using different predicates/types (e.g., vocab:satisfy/allocate/other, or different direction).",
+          "decision": "retry",
+          "reason": "We need to discover how “verified” requirements are represented. The empty result suggests either the predicate vocab:Dependency_supplier isn’t used that way for verification, or the verification nodes aren’t rdf:type vocab:verify in this dataset.",
+          "confidence": 0.62
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9629,
+          "outputTokens": 180,
+          "totalTokens": 9809
+        },
+        "durationMs": 1426,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_wncRN6CN7COpbeXwYrbu7JMt",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_wncRN6CN7COpbeXwYrbu7JMt",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 5,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?req ?reqName WHERE {\n  ?dep rdf:type ?depType .\n  FILTER(?depType IN (vocab:satisfy, vocab:verify, vocab:allocate))\n  ?dep vocab:Dependency_supplier ?req .\n  ?req rdf:type vocab:tmt%20requirement .\n  OPTIONAL { ?req vocab:NamedElement_name ?reqName . }\n}\nORDER BY ?reqName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9843,
+          "outputTokens": 145,
+          "totalTokens": 9988
+        },
+        "durationMs": 1256,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_gFdnlonEg5OGi0xaM0y8V3ee",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_gFdnlonEg5OGi0xaM0y8V3ee",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "errorType": "empty",
+          "message": "Even when considering satisfy/verify/allocate dependency types, no tmt:requirement appears via Dependency_supplier. This indicates the model likely uses different predicates/directions for verification (e.g., req as client or different property names, or relationships are encoded as dependencies without rdf:type filtering).",
+          "decision": "retry",
+          "reason": "We should explore the actual outgoing properties from tmt%20requirement individuals to find which relationship nodes point to them, then map “verification” patterns to the correct predicate/direction.",
+          "confidence": 0.55
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10005,
+          "outputTokens": 178,
+          "totalTokens": 10183
+        },
+        "durationMs": 1559,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_t2lOBcPsHAYdAb07XufHnWG4",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_t2lOBcPsHAYdAb07XufHnWG4",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 181,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?req ?reqName ?p ?v WHERE {\n  ?req rdf:type vocab:tmt%20requirement .\n  OPTIONAL { ?req vocab:NamedElement_name ?reqName . }\n  ?req ?p ?v .\n  FILTER(?p IN (\n    vocab:Dependency_supplier,\n    vocab:Dependency_client,\n    vocab:client,\n    vocab:supplier\n  ))\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10221,
+          "outputTokens": 152,
+          "totalTokens": 10373
+        },
+        "durationMs": 1300,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_6pOgoEXrundcuOJsQWXSTD2V",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_6pOgoEXrundcuOJsQWXSTD2V",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "errorType": "empty",
+          "message": "No triples were found directly from tmt%20requirement via the checked predicates (dependency supplier/client variants). This suggests requirements may be connected through other properties (e.g., _transitionOfGuard, constrainedElement, or via owningElement relationships), or the requirement instances may not have rdf:type vocab:tmt%20requirement in this endpoint.",
+          "decision": "retry",
+          "reason": "We should first confirm where tmt%20requirements are actually typed/named, then we can discover which predicates connect to them from other elements (inverse navigation).",
+          "confidence": 0.48
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10390,
+          "outputTokens": 149,
+          "totalTokens": 10539
+        },
+        "durationMs": 1215,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_J8222Eh4qBd1CFlcpXXwk86K",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_J8222Eh4qBd1CFlcpXXwk86K",
+        "parentCallId": "llm_0007",
+        "toolName": "sparql_query",
+        "durationMs": 5,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?elem ?type ?name WHERE {\n  ?elem rdf:type ?type .\n  FILTER(?type = vocab:tmt%20requirement)\n  OPTIONAL { ?elem vocab:NamedElement_name ?name . }\n  OPTIONAL { ?elem rdf:type ?type . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 25
+        },
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "llm_call",
+        "callId": "llm_0008",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 12514,
+          "outputTokens": 144,
+          "totalTokens": 12658
+        },
+        "durationMs": 1438,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_JIW3EtziiTGW719bxOGbbbZi",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 15,
+        "kind": "tool_exec",
+        "toolCallId": "call_JIW3EtziiTGW719bxOGbbbZi",
+        "parentCallId": "llm_0008",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 25,
+          "errorType": "",
+          "message": "We confirmed that tmt:requirement instances exist and can be enumerated with rdf:type vocab:tmt%20requirement. The earlier “verification” mapping failed, so the verification relationships likely use different predicates than Dependency_supplier/client or don’t use rdf:type vocab:verify/dependency wrapper nodes.",
+          "decision": "retry",
+          "reason": "Next we should discover how verification is encoded by looking for satisfy/verify/allocate relationships where either side is a tmt:requirement, including inverse directions and other relationship predicates.",
+          "confidence": 0.63
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 16,
+        "kind": "llm_call",
+        "callId": "llm_0009",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 12675,
+          "outputTokens": 271,
+          "totalTokens": 12946
+        },
+        "durationMs": 1913,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_1tta71Ldix9IMRIoV79wcE8B",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 17,
+        "kind": "tool_exec",
+        "toolCallId": "call_1tta71Ldix9IMRIoV79wcE8B",
+        "parentCallId": "llm_0009",
+        "toolName": "sparql_query",
+        "durationMs": 180,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?relType ?req ?reqName ?other ?otherName WHERE {\n  {\n    ?rel rdf:type ?relType .\n    FILTER(?relType IN (vocab:satisfy, vocab:verify, vocab:allocate, vocab:dependency, vocab:dependency%20))\n    ?rel ?p ?req .\n  }\n  UNION\n  {\n    ?req ?p ?other .\n    FILTER(?p IN (vocab:client, vocab:supplier, vocab:Dependency_client, vocab:Dependency_supplier))\n    BIND(vocab:dependency AS ?relType)\n  }\n  ?req rdf:type vocab:tmt%20requirement .\n  OPTIONAL { ?req vocab:NamedElement_name ?reqName . }\n  OPTIONAL { ?other vocab:NamedElement_name ?otherName . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 25
+        },
+        "error": null
+      },
+      {
+        "seq": 18,
+        "kind": "llm_call",
+        "callId": "llm_0010",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 15688,
+          "outputTokens": 172,
+          "totalTokens": 15860
+        },
+        "durationMs": 1519,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_lAGBo44MjthfikRK1vIYT0ba",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 19,
+        "kind": "tool_exec",
+        "toolCallId": "call_lAGBo44MjthfikRK1vIYT0ba",
+        "parentCallId": "llm_0010",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 25,
+          "errorType": "",
+          "message": "We now see tmt:requirement nodes participating in rdf:type vocab:dependency relationships, but the results don’t label them as “verified”; they instead look like traceability/customization links to other model elements. This suggests that “verified” in this dataset is encoded indirectly or via specific dependency types/properties not captured by our earlier assumptions.",
+          "decision": "finalize",
+          "reason": "Provide the requirements that are involved in dependency links related to verification/traceability, since that is the only discovered connection pattern to requirements. We will report the requirement names from the result set and note that the model encodes them through vocab:dependency relationships to traced elements.",
+          "confidence": 0.5
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 20,
+        "kind": "llm_call",
+        "callId": "llm_0011",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 15877,
+          "outputTokens": 214,
+          "totalTokens": 16091
+        },
+        "durationMs": 1725,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_N2Y1dpj2DZE0I98DNwMLlA2W",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 21,
+        "kind": "tool_exec",
+        "toolCallId": "call_N2Y1dpj2DZE0I98DNwMLlA2W",
+        "parentCallId": "llm_0011",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "The model contains many elements typed as **vocab:tmt%20requirement**, but the specific “verified by the model” links do not appear to be encoded using **vocab:verify** (or vocab:verify nodes with Dependency_supplier/client) in the way initially assumed.\n\nWhat we *can* extract from the graph is that **tmt:requirements participate in vocab:dependency links** (used as traceability/customization links). Examples of requirements found in those dependency-connected results include:\n- **“FOV”**\n- **“Segment Measurement Error after AO”**\n- **“APS GUI with engineering data”**\n- **“Component Functional Conditions”**\n- **“Applicable Documents”**\n- **“Overall Description”**\n\nIn these extracted results, each requirement is linked via **vocab:dependency** to other model elements (often “Derived Properties … Traceability” related elements)."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 22,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-04-02T01:18:45.571Z",
+        "status": "OK",
+        "finalAnswer": "The model contains many elements typed as **vocab:tmt%20requirement**, but the specific “verified by the model” links do not appear to be encoded using **vocab:verify** (or vocab:verify nodes with Dependency_supplier/client) in the way initially assumed.\n\nWhat we *can* extract from the graph is that **tmt:requirements participate in vocab:dependency links** (used as traceability/customization links). Examples of requirements found in those dependency-connected results include:\n- **“FOV”**\n- **“Segment Measurement Error after AO”**\n- **“APS GUI with engineering data”**\n- **“Component Functional Conditions”**\n- **“Applicable Documents”**\n- **“Overall Description”**\n\nIn these extracted results, each requirement is linked via **vocab:dependency** to other model elements (often “Derived Properties … Traceability” related elements).",
+        "afterCallId": "llm_0011"
+      }
+    ],
+    "counts": {
+      "llmCalls": 11,
+      "toolExecs": 11
+    }
+  }
+}

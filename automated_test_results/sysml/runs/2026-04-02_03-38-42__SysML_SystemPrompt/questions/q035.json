@@ -1,0 +1,299 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q035",
+    "question": "Are there any deprected packages in the APS model?",
+    "durationMs": 77572,
+    "status": "OK",
+    "finalAnswer": "Yes, there are deprecated packages in the APS model. There are **3 deprecated packages** in the APS (Alignment and Phasing System) model:\n\n1. **Software Architecture (deprecated)** - Located in: APS → Realization Design → Software Architecture (deprecated)\n   - Contains sub-packages: Executive Software, Sequencers\n\n2. **SH Reference Beam Collection (deprecated)** - Located in: APS → Conceptual Design → Configuration Tables → Wavefront Calibration Lookup Table → SH Reference Beam Collection (deprecated)\n\n3. **PIT Reference Beam Collection (deprecated)** - Located in: APS → Conceptual Design → Configuration Tables → Wavefront Calibration Lookup Table → PIT Reference Beam Collection (deprecated)\n\nAdditionally, there are 2 other deprecated/obsolete packages in the broader model outside of APS:\n- Software Architecture (OBSOLETE) in Tests, Examples, and Braindumps\n- A package named \"deprecated\" in SIDefinitions",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 83681,
+      "outputTokens": 1571,
+      "totalTokens": 85252
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9603,
+          "outputTokens": 168,
+          "totalTokens": 9771
+        },
+        "durationMs": 9176,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_9dbf6b655dd34ae8b6da4d68",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_9dbf6b655dd34ae8b6da4d68",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 18,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT ?pkg ?name ?type WHERE {\n  ?pkg rdf:type vocab:package .\n  ?pkg vocab:NamedElement_name ?name .\n  ?pkg rdf:type ?type .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 25
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 11541,
+          "outputTokens": 157,
+          "totalTokens": 11698
+        },
+        "durationMs": 5534,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_2598fe80df8e40709d01f883",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_2598fe80df8e40709d01f883",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 25,
+          "decision": "retry",
+          "reason": "Found packages with \"deprecated\" in their names. Need to do a more specific search for deprecated packages in the APS model to get complete list.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 11668,
+          "outputTokens": 154,
+          "totalTokens": 11822
+        },
+        "durationMs": 6526,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_e3c9b8796d534c7dace0b5ed",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_e3c9b8796d534c7dace0b5ed",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 21,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?pkg ?name WHERE {\n  ?pkg rdf:type vocab:package .\n  ?pkg vocab:NamedElement_name ?name .\n  FILTER(CONTAINS(LCASE(STR(?name)), \"deprecated\") || CONTAINS(LCASE(STR(?name)), \"obsolete\"))\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 5
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 12269,
+          "outputTokens": 219,
+          "totalTokens": 12488
+        },
+        "durationMs": 15290,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_732110def7034d1fb925486d",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_732110def7034d1fb925486d",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 5,
+          "decision": "retry",
+          "reason": "Found 5 deprecated/obsolete packages. Need to verify these are in the APS model and check for any additional markers like stereotypes.",
+          "confidence": 0.7
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 12394,
+          "outputTokens": 180,
+          "totalTokens": 12574
+        },
+        "durationMs": 16230,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_bb201e277eae4ff39733e69b",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_bb201e277eae4ff39733e69b",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 18,
+        "status": "OK",
+        "request": {
+          "query": "BASE <http://api.koneksys.com/cameo/>\nPREFIX vocab: <http://api.koneksys.com/cameo/vocab/>\nPREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT DISTINCT ?pkg ?name ?ownerName WHERE {\n  ?pkg rdf:type vocab:package .\n  ?pkg vocab:NamedElement_name ?name .\n  FILTER(CONTAINS(LCASE(STR(?name)), \"deprecated\") || CONTAINS(LCASE(STR(?name)), \"obsolete\"))\n  OPTIONAL { ?pkg vocab:Element_owner ?owner . \n             ?owner vocab:NamedElement_name ?ownerName }\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 5
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 13034,
+          "outputTokens": 365,
+          "totalTokens": 13399
+        },
+        "durationMs": 11054,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_99bd612538d849f889857e0d",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_99bd612538d849f889857e0d",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 5,
+          "decision": "finalize",
+          "reason": "Found 3 deprecated packages in the APS model (those with \"APS\" in the path). The other 2 are in different model areas (SIDefinitions and Tests/Braindumps).",
+          "confidence": 0.9
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 13172,
+          "outputTokens": 328,
+          "totalTokens": 13500
+        },
+        "durationMs": 13669,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_662b5fa60d4a47848fdeffdc",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_662b5fa60d4a47848fdeffdc",
+        "parentCallId": "llm_0007",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Yes, there are deprecated packages in the APS model. There are **3 deprecated packages** in the APS (Alignment and Phasing System) model:\n\n1. **Software Architecture (deprecated)** - Located in: APS → Realization Design → Software Architecture (deprecated)\n   - Contains sub-packages: Executive Software, Sequencers\n\n2. **SH Reference Beam Collection (deprecated)** - Located in: APS → Conceptual Design → Configuration Tables → Wavefront Calibration Lookup Table → SH Reference Beam Collection (deprecated)\n\n3. **PIT Reference Beam Collection (deprecated)** - Located in: APS → Conceptual Design → Configuration Tables → Wavefront Calibration Lookup Table → PIT Reference Beam Collection (deprecated)\n\nAdditionally, there are 2 other deprecated/obsolete packages in the broader model outside of APS:\n- Software Architecture (OBSOLETE) in Tests, Examples, and Braindumps\n- A package named \"deprecated\" in SIDefinitions"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-04-02T05:59:12.919Z",
+        "status": "OK",
+        "finalAnswer": "Yes, there are deprecated packages in the APS model. There are **3 deprecated packages** in the APS (Alignment and Phasing System) model:\n\n1. **Software Architecture (deprecated)** - Located in: APS → Realization Design → Software Architecture (deprecated)\n   - Contains sub-packages: Executive Software, Sequencers\n\n2. **SH Reference Beam Collection (deprecated)** - Located in: APS → Conceptual Design → Configuration Tables → Wavefront Calibration Lookup Table → SH Reference Beam Collection (deprecated)\n\n3. **PIT Reference Beam Collection (deprecated)** - Located in: APS → Conceptual Design → Configuration Tables → Wavefront Calibration Lookup Table → PIT Reference Beam Collection (deprecated)\n\nAdditionally, there are 2 other deprecated/obsolete packages in the broader model outside of APS:\n- Software Architecture (OBSOLETE) in Tests, Examples, and Braindumps\n- A package named \"deprecated\" in SIDefinitions",
+        "afterCallId": "llm_0007"
+      }
+    ],
+    "counts": {
+      "llmCalls": 7,
+      "toolExecs": 7
+    }
+  }
+}

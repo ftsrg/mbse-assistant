@@ -1,0 +1,149 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q148",
+    "question": "Which organizations contain models related to restaurants?",
+    "durationMs": 3749,
+    "status": "OK",
+    "finalAnswer": "Organizations containing models related to “restaurants”:\n- Org53 (orgId: 986027b9455f48fd81c81316f4bb882e): 1 model",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 18445,
+      "outputTokens": 443,
+      "totalTokens": 18888
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 5869,
+          "outputTokens": 272,
+          "totalTokens": 6141
+        },
+        "durationMs": 1723,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_lmTLycSruUwXHQZnEJz209QH",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_lmTLycSruUwXHQZnEJz209QH",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 21,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?orgName ?orgId (COUNT(DISTINCT ?model) AS ?modelCount) WHERE {\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n\n  ?org (rdfs:label|bbo:name) ?orgNameRaw .\n  BIND(STR(?orgNameRaw) AS ?orgName)\n  OPTIONAL { ?org tai:organizationId ?orgId . }\n\n  ?model bbo:name ?modelName .\n  FILTER(CONTAINS(LCASE(STR(?modelName)), \"restaurant\"))\n}\nGROUP BY ?orgName ?orgId\nORDER BY DESC(?modelCount)\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6222,
+          "outputTokens": 115,
+          "totalTokens": 6337
+        },
+        "durationMs": 1174,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_fEBdkFknSKpCv84crfEAExvq",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_fEBdkFknSKpCv84crfEAExvq",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 1,
+          "errorType": "",
+          "message": "The query returned one organization whose models include the term 'restaurant' in the model name. This directly answers which organizations contain such models, with an explicit model count.",
+          "decision": "finalize",
+          "reason": "We have non-empty results and they satisfy the question. No further exploration steps are required because the task is not about discovering structure but retrieving organizations matching a keyword filter.",
+          "confidence": 0.78
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6354,
+          "outputTokens": 56,
+          "totalTokens": 6410
+        },
+        "durationMs": 811,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_nTy1BnQUF8fqlB2PuksVziVD",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_nTy1BnQUF8fqlB2PuksVziVD",
+        "parentCallId": "llm_0003",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Organizations containing models related to “restaurants”:\n- Org53 (orgId: 986027b9455f48fd81c81316f4bb882e): 1 model"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-28T18:40:09.282Z",
+        "status": "OK",
+        "finalAnswer": "Organizations containing models related to “restaurants”:\n- Org53 (orgId: 986027b9455f48fd81c81316f4bb882e): 1 model",
+        "afterCallId": "llm_0003"
+      }
+    ],
+    "counts": {
+      "llmCalls": 3,
+      "toolExecs": 3
+    }
+  }
+}

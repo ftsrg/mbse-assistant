@@ -1,0 +1,565 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q107",
+    "question": "In this model, how many ways are there for the choreography to execute? (Model ID: 3d0f07f9b84c4e31bbca562f472c8885)",
+    "durationMs": 106773,
+    "status": "OK",
+    "finalAnswer": "There are **4 distinct execution paths** in this choreography model.\n\nThe model contains **2 Exclusive (XOR) Gateways**, each offering 2 alternative branches. Since both gateways are always encountered during execution, the total number of distinct paths is **2 × 2 = 4**.\n\nHere's how the branching works:\n\n**XOR Gateway 1 — \"der Produktion sind die Daten bekannt?\" (Are the production data known?)**\n- **Yes branch:** proceeds directly to \"Rohstoffe, interne Nummer, Verbrauch erfragen\" (request raw materials, internal number, consumption)\n- **Nein (No) branch:** enters a parallel split where unknown data is looked up via analogous materials, sample raw materials, etc.\n\nBoth branches eventually converge and continue to…\n\n**XOR Gateway 2 — \"bestätigt?\" (Confirmed?)**\n- **Yes branch:** proceeds to a converging parallel gateway and then toward the final tasks and the end event.\n- **Nein (No) branch:** loops back to \"Überprüfung für Stückliste, Arbeitspläne, Fertigungsversionen anfragen\" (request review of BOM, work plans, production versions), creating a review cycle.\n\nThe 4 execution paths are:\n1. **Data known + Confirmed** — straight-through path\n2. **Data known + Not confirmed** — goes through the review loop\n3. **Data not known + Confirmed** — parallel lookup, then confirmed\n4. **Data not known + Not confirmed** — parallel lookup, then review loop\n\nNote: The \"nein\" branch of the second gateway creates a loop, meaning the review cycle could repeat multiple times before confirmation. If counting each loop iteration as a separate path, the number would be theoretically unbounded — but structurally, there are **4 distinct path types** through the choreography.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 220189,
+      "outputTokens": 5363,
+      "totalTokens": 225552
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7806,
+          "outputTokens": 423,
+          "totalTokens": 8229
+        },
+        "durationMs": 7540,
+        "status": "OK",
+        "output": "\n\nI'll analyze the choreography model to determine how many execution paths exist. Let me start by exploring the model structure.",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_012kgZvt8o99dSK2uDM6TUgN",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_012kgZvt8o99dSK2uDM6TUgN",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 20,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?elem ?name ?type WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"3d0f07f9b84c4e31bbca562f472c8885\" .\n  ?def tai:belongsTo ?model .\n  ?choreo tai:belongsTo ?def .\n  ?choreo a bboExt:Choreography .\n  ?elem tai:belongsTo ?choreo .\n  ?elem a ?type .\n  OPTIONAL { ?elem bbo:name ?name . }\n  FILTER(?type IN (\n    bboExt:ChoreographyTask,\n    bboExt:StartEvent,\n    bboExt:EndEvent,\n    bboExt:ExclusiveGateway,\n    bboExt:ParallelGateway,\n    bboExt:EventBasedGateway,\n    bboExt:IntermediateCatchEvent,\n    bbo:SequenceFlow\n  ))\n}\nORDER BY ?type ?name\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 67
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9867,
+          "outputTokens": 191,
+          "totalTokens": 10058
+        },
+        "durationMs": 5578,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01JEBjhmLzPJfhw2Nj3nCZJT",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01JEBjhmLzPJfhw2Nj3nCZJT",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 2,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 67,
+          "decision": "retry",
+          "reason": "Got 67 elements but results are truncated. I need to see the gateways specifically to understand branching. Let me query for just the gateways and their directions, plus count of end events, to determine execution paths.",
+          "confidence": 0.3
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10075,
+          "outputTokens": 364,
+          "totalTokens": 10439
+        },
+        "durationMs": 5219,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_0126rpFu5rEyFMj4nQ8LrNz1",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_0126rpFu5rEyFMj4nQ8LrNz1",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 15,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type (COUNT(?elem) AS ?cnt) WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"3d0f07f9b84c4e31bbca562f472c8885\" .\n  ?def tai:belongsTo ?model .\n  ?choreo tai:belongsTo ?def .\n  ?choreo a bboExt:Choreography .\n  ?elem tai:belongsTo ?choreo .\n  ?elem a ?type .\n  FILTER(?type IN (\n    bboExt:ChoreographyTask,\n    bboExt:StartEvent,\n    bboExt:EndEvent,\n    bboExt:ExclusiveGateway,\n    bboExt:ParallelGateway,\n    bboExt:EventBasedGateway,\n    bboExt:IntermediateCatchEvent,\n    bbo:SequenceFlow\n  ))\n}\nGROUP BY ?type\nORDER BY ?type\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 6
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10671,
+          "outputTokens": 232,
+          "totalTokens": 10903
+        },
+        "durationMs": 5879,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01Jy8Y6esaLJwem6cieK59ga",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01Jy8Y6esaLJwem6cieK59ga",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 4,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 6,
+          "decision": "retry",
+          "reason": "The model has 20 tasks, 2 exclusive gateways, 7 parallel gateways, 1 start, 1 end, 36 sequence flows. The number of execution paths depends on the exclusive gateways (XOR) since they create alternative branches. Parallel gateways create concurrent paths but not alternative ones. I need to examine the gateway details - their directions and branching structure.",
+          "confidence": 0.4
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10920,
+          "outputTokens": 470,
+          "totalTokens": 11390
+        },
+        "durationMs": 7347,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01Vc81KkEwVV7k1cJ2D9BrH2",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01Vc81KkEwVV7k1cJ2D9BrH2",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 14,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?gw ?gwName ?gwType ?dir \n       (COUNT(DISTINCT ?outEdge) AS ?outgoing) \n       (COUNT(DISTINCT ?inEdge) AS ?incoming) \nWHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"3d0f07f9b84c4e31bbca562f472c8885\" .\n  ?def tai:belongsTo ?model .\n  ?choreo tai:belongsTo ?def .\n  ?choreo a bboExt:Choreography .\n  ?gw tai:belongsTo ?choreo .\n  ?gw a ?gwType .\n  FILTER(?gwType IN (bboExt:ExclusiveGateway, bboExt:ParallelGateway, bboExt:EventBasedGateway))\n  OPTIONAL { ?gw bbo:name ?gwName . }\n  OPTIONAL { ?gw bboExt:gatewayDirection ?dir . }\n  OPTIONAL {\n    ?outEdge a bbo:SequenceFlow .\n    ?outEdge bbo:has_sourceRef ?gw .\n  }\n  OPTIONAL {\n    ?inEdge a bbo:SequenceFlow .\n    ?inEdge bbo:has_targetRef ?gw .\n  }\n}\nGROUP BY ?gw ?gwName ?gwType ?dir\nORDER BY ?gwType ?dir\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 9
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 12379,
+          "outputTokens": 245,
+          "totalTokens": 12624
+        },
+        "durationMs": 5578,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01TCEjfkmeZQYMZGUEfyczED",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01TCEjfkmeZQYMZGUEfyczED",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 2,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 9,
+          "decision": "retry",
+          "reason": "Now I can see the gateway structure clearly. There are 2 exclusive (XOR) gateways, both diverging with 2 outgoing branches each. There are 7 parallel gateways (3 diverging, 4 converging). I need to check if the XOR gateways are independent (sequential/nested) or if one is inside a branch of the other. Let me trace the flow to understand the relationship between the two XOR gateways.",
+          "confidence": 0.5
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 12641,
+          "outputTokens": 544,
+          "totalTokens": 13185
+        },
+        "durationMs": 6627,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01HsKeYWebyTTPQBBCei2csP",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01HsKeYWebyTTPQBBCei2csP",
+        "parentCallId": "llm_0007",
+        "toolName": "sparql_query",
+        "durationMs": 18,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?source ?sourceName ?sourceType ?edgeName ?target ?targetName ?targetType WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"3d0f07f9b84c4e31bbca562f472c8885\" .\n  ?def tai:belongsTo ?model .\n  ?choreo tai:belongsTo ?def .\n  ?choreo a bboExt:Choreography .\n  ?edge a bbo:SequenceFlow .\n  ?edge tai:belongsTo ?choreo .\n  ?edge bbo:has_sourceRef ?source .\n  ?edge bbo:has_targetRef ?target .\n  ?source a ?sourceType .\n  ?target a ?targetType .\n  OPTIONAL { ?source bbo:name ?sourceName . }\n  OPTIONAL { ?target bbo:name ?targetName . }\n  OPTIONAL { ?edge bbo:name ?edgeName . }\n  FILTER(?sourceType IN (\n    bboExt:ChoreographyTask, bboExt:StartEvent, bboExt:EndEvent,\n    bboExt:ExclusiveGateway, bboExt:ParallelGateway, bboExt:EventBasedGateway,\n    bboExt:IntermediateCatchEvent\n  ))\n  FILTER(?targetType IN (\n    bboExt:ChoreographyTask, bboExt:StartEvent, bboExt:EndEvent,\n    bboExt:ExclusiveGateway, bboExt:ParallelGateway, bboExt:EventBasedGateway,\n    bboExt:IntermediateCatchEvent\n  ))\n}\nORDER BY ?source\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 36
+        },
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "llm_call",
+        "callId": "llm_0008",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 17435,
+          "outputTokens": 200,
+          "totalTokens": 17635
+        },
+        "durationMs": 5848,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01R9HXivBkYocHtCafv1QNdW",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 15,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01R9HXivBkYocHtCafv1QNdW",
+        "parentCallId": "llm_0008",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 36,
+          "decision": "retry",
+          "reason": "I can see the flow structure but results are truncated at 20 rows. I need to see all 36 edges. Let me get the remaining edges. But actually, I already have enough to start analyzing. Let me get the rest of the edges to complete the picture.",
+          "confidence": 0.5
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 16,
+        "kind": "llm_call",
+        "callId": "llm_0009",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 17652,
+          "outputTokens": 541,
+          "totalTokens": 18193
+        },
+        "durationMs": 11948,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01NZvdo1SokMZjQ6Re5NRr6Y",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 17,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01NZvdo1SokMZjQ6Re5NRr6Y",
+        "parentCallId": "llm_0009",
+        "toolName": "sparql_query",
+        "durationMs": 33,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?sourceType ?edgeName ?targetName ?targetType WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"3d0f07f9b84c4e31bbca562f472c8885\" .\n  ?def tai:belongsTo ?model .\n  ?choreo tai:belongsTo ?def .\n  ?choreo a bboExt:Choreography .\n  ?edge a bbo:SequenceFlow .\n  ?edge tai:belongsTo ?choreo .\n  ?edge bbo:has_sourceRef ?source .\n  ?edge bbo:has_targetRef ?target .\n  ?source a ?sourceType .\n  ?target a ?targetType .\n  OPTIONAL { ?source bbo:name ?sourceName . }\n  OPTIONAL { ?target bbo:name ?targetName . }\n  OPTIONAL { ?edge bbo:name ?edgeName . }\n  FILTER(?sourceType IN (\n    bboExt:ChoreographyTask, bboExt:StartEvent, bboExt:EndEvent,\n    bboExt:ExclusiveGateway, bboExt:ParallelGateway, bboExt:EventBasedGateway,\n    bboExt:IntermediateCatchEvent\n  ))\n  FILTER(?targetType IN (\n    bboExt:ChoreographyTask, bboExt:StartEvent, bboExt:EndEvent,\n    bboExt:ExclusiveGateway, bboExt:ParallelGateway, bboExt:EventBasedGateway,\n    bboExt:IntermediateCatchEvent\n  ))\n}\nORDER BY ?sourceName\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 36
+        },
+        "error": null
+      },
+      {
+        "seq": 18,
+        "kind": "llm_call",
+        "callId": "llm_0010",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 20210,
+          "outputTokens": 186,
+          "totalTokens": 20396
+        },
+        "durationMs": 5714,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01TGxB2VWGGAjMYpi3ZC8AdR",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 19,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01TGxB2VWGGAjMYpi3ZC8AdR",
+        "parentCallId": "llm_0010",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 36,
+          "decision": "retry",
+          "reason": "Results are still truncated at 20 visible rows. Let me get the remaining edges by using OFFSET or filtering differently. But I already have a good picture. Let me get the remaining edges with OFFSET.",
+          "confidence": 0.6
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 20,
+        "kind": "llm_call",
+        "callId": "llm_0011",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 20413,
+          "outputTokens": 546,
+          "totalTokens": 20959
+        },
+        "durationMs": 7027,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01HUjwakFeF1WuykfCLpBL7G",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 21,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01HUjwakFeF1WuykfCLpBL7G",
+        "parentCallId": "llm_0011",
+        "toolName": "sparql_query",
+        "durationMs": 31,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sourceName ?sourceType ?edgeName ?targetName ?targetType WHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"3d0f07f9b84c4e31bbca562f472c8885\" .\n  ?def tai:belongsTo ?model .\n  ?choreo tai:belongsTo ?def .\n  ?choreo a bboExt:Choreography .\n  ?edge a bbo:SequenceFlow .\n  ?edge tai:belongsTo ?choreo .\n  ?edge bbo:has_sourceRef ?source .\n  ?edge bbo:has_targetRef ?target .\n  ?source a ?sourceType .\n  ?target a ?targetType .\n  OPTIONAL { ?source bbo:name ?sourceName . }\n  OPTIONAL { ?target bbo:name ?targetName . }\n  OPTIONAL { ?edge bbo:name ?edgeName . }\n  FILTER(?sourceType IN (\n    bboExt:ChoreographyTask, bboExt:StartEvent, bboExt:EndEvent,\n    bboExt:ExclusiveGateway, bboExt:ParallelGateway, bboExt:EventBasedGateway,\n    bboExt:IntermediateCatchEvent\n  ))\n  FILTER(?targetType IN (\n    bboExt:ChoreographyTask, bboExt:StartEvent, bboExt:EndEvent,\n    bboExt:ExclusiveGateway, bboExt:ParallelGateway, bboExt:EventBasedGateway,\n    bboExt:IntermediateCatchEvent\n  ))\n}\nORDER BY ?sourceName\nOFFSET 20\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 16
+        },
+        "error": null
+      },
+      {
+        "seq": 22,
+        "kind": "llm_call",
+        "callId": "llm_0012",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 22804,
+          "outputTokens": 722,
+          "totalTokens": 23526
+        },
+        "durationMs": 16230,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01DxT2Z8FV5HLxmdqKq4RntQ",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 23,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01DxT2Z8FV5HLxmdqKq4RntQ",
+        "parentCallId": "llm_0012",
+        "toolName": "decision_log",
+        "durationMs": 3,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 16,
+          "decision": "finalize",
+          "reason": "Now I have the complete flow structure. Let me analyze the execution paths. The key decision points are the 2 exclusive (XOR) gateways, each with 2 branches. Parallel gateways don't create alternative paths - they split into concurrent branches that all execute. Let me trace the logic:\n\nXOR Gateway 1: \"der Produktion sind die Daten bekannt?\" (Are the production data known?)\n- Branch A (yes/conditions): → \"Rohstoffe, interne Nummer, Verbrauch erfragen\" → continues\n- Branch B (nein): → ParallelGateway (diverging, 2 branches) → both branches execute in parallel → converge\n\nXOR Gateway 2: \"bestätigt?\" (Confirmed?)\n- Branch A (yes/conditions): → ParallelGateway (converging) → continues to end\n- Branch B (nein): → loops back to \"Überprüfung für Stückliste...\" (a review/check task)\n\nThe \"bestätigt?\" gateway with \"nein\" creates a loop back. This means theoretically infinite paths due to the loop. But in terms of distinct structural paths (ignoring loop iterations):\n\nPath 1: XOR1=yes → ... → XOR2=yes → end\nPath 2: XOR1=yes → ... → XOR2=nein → loop back → (eventually XOR2=yes) → end\nPath 3: XOR1=nein → parallel split → ... → XOR2=yes → end\nPath 4: XOR1=nein → parallel split → ... → XOR2=nein → loop back → end\n\nBut the loop from XOR2 makes this potentially infinite. However, the question asks about \"ways for the choreography to execute\" which typically means the number of distinct paths determined by exclusive gateway decisions (without considering loop repetitions as separate paths).\n\nWith 2 independent XOR gateways each having 2 branches, there are 2 × 2 = 4 distinct execution paths. However, I need to check if both XOR gateways are truly independent or if one is only reachable from certain branches of the other.\n\nLooking at the flow: XOR1 is reached from \"benötigte Rohstoffe...\" task. Both branches of XOR1 eventually converge (through parallel gateways) and reach XOR2. So both XOR gateways are on the main path and both are always encountered. This gives 2 × 2 = 4 distinct execution paths.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 24,
+        "kind": "llm_call",
+        "callId": "llm_0013",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 23543,
+          "outputTokens": 213,
+          "totalTokens": 23756
+        },
+        "durationMs": 4987,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01RXKUCyWSkQakq9evCzBAFB",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 25,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01RXKUCyWSkQakq9evCzBAFB",
+        "parentCallId": "llm_0013",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "decision": "finalize",
+          "reason": "I have fully traced the choreography flow and identified the branching structure. There are 2 exclusive (XOR) gateways, each with 2 outgoing branches, and both are always encountered on every execution. This yields 4 distinct execution paths. The loop from XOR2 \"nein\" back to a review task doesn't create a new structural path type - it just means the review cycle can repeat.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 26,
+        "kind": "llm_call",
+        "callId": "llm_0014",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 23773,
+          "outputTokens": 486,
+          "totalTokens": 24259
+        },
+        "durationMs": 11051,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "toolu_bdrk_01V68gQhN1WKuXJThp9C7M6w",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 27,
+        "kind": "tool_exec",
+        "toolCallId": "toolu_bdrk_01V68gQhN1WKuXJThp9C7M6w",
+        "parentCallId": "llm_0014",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "There are **4 distinct execution paths** in this choreography model.\n\nThe model contains **2 Exclusive (XOR) Gateways**, each offering 2 alternative branches. Since both gateways are always encountered during execution, the total number of distinct paths is **2 × 2 = 4**.\n\nHere's how the branching works:\n\n**XOR Gateway 1 — \"der Produktion sind die Daten bekannt?\" (Are the production data known?)**\n- **Yes branch:** proceeds directly to \"Rohstoffe, interne Nummer, Verbrauch erfragen\" (request raw materials, internal number, consumption)\n- **Nein (No) branch:** enters a parallel split where unknown data is looked up via analogous materials, sample raw materials, etc.\n\nBoth branches eventually converge and continue to…\n\n**XOR Gateway 2 — \"bestätigt?\" (Confirmed?)**\n- **Yes branch:** proceeds to a converging parallel gateway and then toward the final tasks and the end event.\n- **Nein (No) branch:** loops back to \"Überprüfung für Stückliste, Arbeitspläne, Fertigungsversionen anfragen\" (request review of BOM, work plans, production versions), creating a review cycle.\n\nThe 4 execution paths are:\n1. **Data known + Confirmed** — straight-through path\n2. **Data known + Not confirmed** — goes through the review loop\n3. **Data not known + Confirmed** — parallel lookup, then confirmed\n4. **Data not known + Not confirmed** — parallel lookup, then review loop\n\nNote: The \"nein\" branch of the second gateway creates a loop, meaning the review cycle could repeat multiple times before confirmation. If counting each loop iteration as a separate path, the number would be theoretically unbounded — but structurally, there are **4 distinct path types** through the choreography."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 28,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-24T15:32:32.677Z",
+        "status": "OK",
+        "finalAnswer": "There are **4 distinct execution paths** in this choreography model.\n\nThe model contains **2 Exclusive (XOR) Gateways**, each offering 2 alternative branches. Since both gateways are always encountered during execution, the total number of distinct paths is **2 × 2 = 4**.\n\nHere's how the branching works:\n\n**XOR Gateway 1 — \"der Produktion sind die Daten bekannt?\" (Are the production data known?)**\n- **Yes branch:** proceeds directly to \"Rohstoffe, interne Nummer, Verbrauch erfragen\" (request raw materials, internal number, consumption)\n- **Nein (No) branch:** enters a parallel split where unknown data is looked up via analogous materials, sample raw materials, etc.\n\nBoth branches eventually converge and continue to…\n\n**XOR Gateway 2 — \"bestätigt?\" (Confirmed?)**\n- **Yes branch:** proceeds to a converging parallel gateway and then toward the final tasks and the end event.\n- **Nein (No) branch:** loops back to \"Überprüfung für Stückliste, Arbeitspläne, Fertigungsversionen anfragen\" (request review of BOM, work plans, production versions), creating a review cycle.\n\nThe 4 execution paths are:\n1. **Data known + Confirmed** — straight-through path\n2. **Data known + Not confirmed** — goes through the review loop\n3. **Data not known + Confirmed** — parallel lookup, then confirmed\n4. **Data not known + Not confirmed** — parallel lookup, then review loop\n\nNote: The \"nein\" branch of the second gateway creates a loop, meaning the review cycle could repeat multiple times before confirmation. If counting each loop iteration as a separate path, the number would be theoretically unbounded — but structurally, there are **4 distinct path types** through the choreography.",
+        "afterCallId": "llm_0014"
+      }
+    ],
+    "counts": {
+      "llmCalls": 14,
+      "toolExecs": 14
+    }
+  }
+}

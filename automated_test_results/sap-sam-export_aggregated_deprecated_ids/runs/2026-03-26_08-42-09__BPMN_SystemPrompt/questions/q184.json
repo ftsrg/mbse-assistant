@@ -1,0 +1,184 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q184",
+    "question": "Which models of the organization have tasks about purchasing goods? (Organization ID: 985f88f59e8b4962a0a2c2fec001b6d1)",
+    "durationMs": 19575,
+    "status": "OK",
+    "finalAnswer": "The organization (Org52, ID: 985f88f59e8b4962a0a2c2fec001b6d1) has **6 models** containing tasks about purchasing goods:\n\n1. **7 Choreo** - Task: \"Bestellung absenden\" (Send order)\n\n2. **AppStore: Choereographiediagramm** - Tasks: \"Aufforderung zur Registrierung\", \"Zahlungsaufforderung\"\n\n3. **Einkauf (BPMN Choreographiediagramm)** - Task: \"Einkauf Jeans\" (Jeans purchase)\n\n4. **7) Choreographie und Konversation** - Multiple purchasing-related tasks including: \"Bestellknopf drücken\" (Press order button), \"Informiert über Bestellung\", \"Bestellt\", \"gibt Bestellung ein\", \"Bringt Bestellung zum Tisch\", \"übergibt Bestellung\", \"meldet fertige Bestellung\", \"bearbeitet Bestellung\", \"Holt Bestellung ab\"\n\n5. **Choreographie Einkauf im Fachhandel** - Task: \"Kaufwunsch\" (Purchase request)\n\n6. **Auktionshaus_Online** - Tasks: \"fordert zu Versand auf\", \"fordert zu Zahlung auf\"\n\nThese models contain a total of 16 tasks related to purchasing, ordering, and buying goods.",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 37423,
+      "outputTokens": 1581,
+      "totalTokens": 39004
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6660,
+          "outputTokens": 319,
+          "totalTokens": 6979
+        },
+        "durationMs": 4920,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_39c95d76a66243809f0e82f4",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_39c95d76a66243809f0e82f4",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 14,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?org ?orgLabel ?model ?modelName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"985f88f59e8b4962a0a2c2fec001b6d1\" .\n  OPTIONAL { ?org rdfs:label ?orgLabel . }\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n  OPTIONAL { ?model bbo:name ?modelName . }\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 25
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8627,
+          "outputTokens": 589,
+          "totalTokens": 9216
+        },
+        "durationMs": 5822,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_10204adfffde4fb7a1da7bde",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_10204adfffde4fb7a1da7bde",
+        "parentCallId": "llm_0002",
+        "toolName": "sparql_query",
+        "durationMs": 17,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?model ?modelName ?task ?taskName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"985f88f59e8b4962a0a2c2fec001b6d1\" .\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n  OPTIONAL { ?model bbo:name ?modelName . }\n  \n  ?definitions a bboExt:Definitions .\n  ?definitions tai:belongsTo ?model .\n  \n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?definitions .\n  \n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n  ?task bbo:name ?taskName .\n  \n  FILTER(\n    CONTAINS(LCASE(STR(?taskName)), \"purchase\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"buy\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"einkauf\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"kauf\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"goods\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"ware\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"bestell\") ||\n    CONTAINS(LCASE(STR(?taskName)), \"order\")\n  )\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 16
+        },
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10980,
+          "outputTokens": 359,
+          "totalTokens": 11339
+        },
+        "durationMs": 4897,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_f059211be4314253af3cb47d",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_f059211be4314253af3cb47d",
+        "parentCallId": "llm_0003",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 16,
+          "decision": "finalize",
+          "reason": "Found 16 tasks related to purchasing goods across 6 models in organization Org52. The query successfully identified models with tasks containing keywords like \"Bestellung\", \"Einkauf\", \"Kauf\", \"order\", \"buy\". Results include specific model names and task names that clearly relate to purchasing activities.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 11156,
+          "outputTokens": 314,
+          "totalTokens": 11470
+        },
+        "durationMs": 3884,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_f4b09add27994e5eb5e0be5b",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_f4b09add27994e5eb5e0be5b",
+        "parentCallId": "llm_0004",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "The organization (Org52, ID: 985f88f59e8b4962a0a2c2fec001b6d1) has **6 models** containing tasks about purchasing goods:\n\n1. **7 Choreo** - Task: \"Bestellung absenden\" (Send order)\n\n2. **AppStore: Choereographiediagramm** - Tasks: \"Aufforderung zur Registrierung\", \"Zahlungsaufforderung\"\n\n3. **Einkauf (BPMN Choreographiediagramm)** - Task: \"Einkauf Jeans\" (Jeans purchase)\n\n4. **7) Choreographie und Konversation** - Multiple purchasing-related tasks including: \"Bestellknopf drücken\" (Press order button), \"Informiert über Bestellung\", \"Bestellt\", \"gibt Bestellung ein\", \"Bringt Bestellung zum Tisch\", \"übergibt Bestellung\", \"meldet fertige Bestellung\", \"bearbeitet Bestellung\", \"Holt Bestellung ab\"\n\n5. **Choreographie Einkauf im Fachhandel** - Task: \"Kaufwunsch\" (Purchase request)\n\n6. **Auktionshaus_Online** - Tasks: \"fordert zu Versand auf\", \"fordert zu Zahlung auf\"\n\nThese models contain a total of 16 tasks related to purchasing, ordering, and buying goods."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T10:43:28.254Z",
+        "status": "OK",
+        "finalAnswer": "The organization (Org52, ID: 985f88f59e8b4962a0a2c2fec001b6d1) has **6 models** containing tasks about purchasing goods:\n\n1. **7 Choreo** - Task: \"Bestellung absenden\" (Send order)\n\n2. **AppStore: Choereographiediagramm** - Tasks: \"Aufforderung zur Registrierung\", \"Zahlungsaufforderung\"\n\n3. **Einkauf (BPMN Choreographiediagramm)** - Task: \"Einkauf Jeans\" (Jeans purchase)\n\n4. **7) Choreographie und Konversation** - Multiple purchasing-related tasks including: \"Bestellknopf drücken\" (Press order button), \"Informiert über Bestellung\", \"Bestellt\", \"gibt Bestellung ein\", \"Bringt Bestellung zum Tisch\", \"übergibt Bestellung\", \"meldet fertige Bestellung\", \"bearbeitet Bestellung\", \"Holt Bestellung ab\"\n\n5. **Choreographie Einkauf im Fachhandel** - Task: \"Kaufwunsch\" (Purchase request)\n\n6. **Auktionshaus_Online** - Tasks: \"fordert zu Versand auf\", \"fordert zu Zahlung auf\"\n\nThese models contain a total of 16 tasks related to purchasing, ordering, and buying goods.",
+        "afterCallId": "llm_0004"
+      }
+    ],
+    "counts": {
+      "llmCalls": 4,
+      "toolExecs": 4
+    }
+  }
+}

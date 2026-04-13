@@ -1,0 +1,190 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q068",
+    "question": "In this model, which tasks have 'Payment Org.' as a participant? (Model ID: 3c08e52742754da6a4065fc5787131dc)",
+    "durationMs": 9014,
+    "status": "OK",
+    "finalAnswer": "Tasks in model **3c08e52742754da6a4065fc5787131dc** with initiating participant **“Payment Org.”**:\n\n1) **Send \"payment failed\" message** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-47E40A68-0972-4376-8C98-9D094F5E8F46) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n2) **Confirm payment** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-7947F700-E7E2-4A9A-AFD0-D22DC71D7260) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n3) **Confirm payment** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-DB2E0E83-6276-4C10-8A0F-BB315D5FEAD5) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n4) **Fulfill order** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-DB2E0E83-6276-4C10-8A0F-BB315D5FEAD5) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n\n**Total:** 4 task instances (note “Confirm payment” appears twice as different tasks).",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 26901,
+      "outputTokens": 1007,
+      "totalTokens": 27908
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 5899,
+          "outputTokens": 380,
+          "totalTokens": 6279
+        },
+        "durationMs": 2774,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_5PV0HAvsV2nhfNMDLubsuVRo",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_5PV0HAvsV2nhfNMDLubsuVRo",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 59,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT\n  ?task ?taskName\n  ?participant ?participantName\n  ?choreo\nWHERE {\n  ?model a bboExt:Model .\n  ?model tai:originalId \"3c08e52742754da6a4065fc5787131dc\" .\n  ?model tai:belongsTo ?org .\n\n  ?defs tai:belongsTo ?model .\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n\n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n\n  ?task bboExt:initiatingParticipantRef ?partRef .\n\n  ?participant a bboExt:Participant .\n  ?participant tai:belongsTo ?choreo .\n  ?participant bbo:name ?participantName .\n  FILTER(CONTAINS(LCASE(STR(?participantName)), LCASE(\"Payment Org.\")))\n\n  FILTER(STRENDS(STR(?participant), ?partRef))\n\n  ?task bbo:name ?taskName .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 4
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6896,
+          "outputTokens": 92,
+          "totalTokens": 6988
+        },
+        "durationMs": 1060,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_3a71qJY6VV4faTaiLhzMr3pG",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_3a71qJY6VV4faTaiLhzMr3pG",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 4,
+          "errorType": "",
+          "message": "",
+          "decision": "finalize",
+          "reason": "The query returned 4 task matches where the initiating participant is named \"Payment Org.\" within the specified model ID. These results directly answer which tasks involve that participant, including task names and (shared) choreography context.",
+          "confidence": 0.86
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7005,
+          "outputTokens": 79,
+          "totalTokens": 7084
+        },
+        "durationMs": 999,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_ZKmHMuSUyXZC7KL2uWR8kqoy",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_ZKmHMuSUyXZC7KL2uWR8kqoy",
+        "parentCallId": "llm_0003",
+        "toolName": "decision_log",
+        "durationMs": 3,
+        "status": "OK",
+        "request": {
+          "event": "finalizing",
+          "status": "ok",
+          "rowCount": 4,
+          "errorType": "",
+          "message": "",
+          "decision": "finalize",
+          "reason": "Providing the list of tasks (with names) whose initiating participant is \"Payment Org.\" for the given model ID, along with the corresponding choreography container URIs.",
+          "confidence": 0.86
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7101,
+          "outputTokens": 456,
+          "totalTokens": 7557
+        },
+        "durationMs": 4094,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_FjXqaaUogU3eYfH1c5RdM0H5",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_FjXqaaUogU3eYfH1c5RdM0H5",
+        "parentCallId": "llm_0004",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Tasks in model **3c08e52742754da6a4065fc5787131dc** with initiating participant **“Payment Org.”**:\n\n1) **Send \"payment failed\" message** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-47E40A68-0972-4376-8C98-9D094F5E8F46) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n2) **Confirm payment** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-7947F700-E7E2-4A9A-AFD0-D22DC71D7260) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n3) **Confirm payment** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-DB2E0E83-6276-4C10-8A0F-BB315D5FEAD5) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n4) **Fulfill order** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-DB2E0E83-6276-4C10-8A0F-BB315D5FEAD5) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n\n**Total:** 4 task instances (note “Confirm payment” appears twice as different tasks)."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-26T09:35:42.422Z",
+        "status": "OK",
+        "finalAnswer": "Tasks in model **3c08e52742754da6a4065fc5787131dc** with initiating participant **“Payment Org.”**:\n\n1) **Send \"payment failed\" message** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-47E40A68-0972-4376-8C98-9D094F5E8F46) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n2) **Confirm payment** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-7947F700-E7E2-4A9A-AFD0-D22DC71D7260) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n3) **Confirm payment** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-DB2E0E83-6276-4C10-8A0F-BB315D5FEAD5) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n4) **Fulfill order** (task URI: https://www.teamingai-project.eu/kg/process/qualityInspection/sid-DB2E0E83-6276-4C10-8A0F-BB315D5FEAD5) — choreography: https://www.teamingai-project.eu/kg/process/qualityInspection/sid_86d8a78f_54c4_423d_92e1_edf43db849dc\n\n**Total:** 4 task instances (note “Confirm payment” appears twice as different tasks).",
+        "afterCallId": "llm_0004"
+      }
+    ],
+    "counts": {
+      "llmCalls": 4,
+      "toolExecs": 4
+    }
+  }
+}

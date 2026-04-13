@@ -1,0 +1,605 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q150",
+    "question": "What models in the organization include travel agencies as task participants? (Organization ID: 4d36ddb24c9e4cc38572abbd646c1e58)",
+    "durationMs": 141465,
+    "status": "OK",
+    "finalAnswer": "The following 4 models in organization ID 4d36ddb24c9e4cc38572abbd646c1e58 include travel agencies (\"Reisebüro\") as task participants:\n\n1. **Übung 7 Aufgabe 1** — participant: Reisebüro\n2. **Aufg.5 - Reisebuchung (Kopie)** — participant: Reisebüro\n3. **Reisebüro (Kopie)** — participant: Reisebüro\n4. **Aufg.5 - Reisebuchung** — participant: Reisebüro\n\nNote: The term \"Reisebüro\" is German for \"travel agency\".",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 139054,
+      "outputTokens": 3365,
+      "totalTokens": 142419
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6276,
+          "outputTokens": 370,
+          "totalTokens": 6646
+        },
+        "durationMs": 10199,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_5b2b590d10874b82a26a0957",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_5b2b590d10874b82a26a0957",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 25,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?participant ?name ?orgId WHERE {\n  ?participant a bboExt:Participant .\n  ?participant bbo:name ?name .\n  FILTER(CONTAINS(LCASE(STR(?name)), LCASE(\"travel agency\")))\n  ?participant tai:belongsTo ?choreo .\n  ?choreo tai:belongsTo ?defs .\n  ?defs tai:belongsTo ?model .\n  ?model tai:belongsTo ?org .\n  ?org tai:organizationId ?orgId .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 25
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7931,
+          "outputTokens": 185,
+          "totalTokens": 8116
+        },
+        "durationMs": 5505,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_434810e65f4b44f2a60f9781",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_434810e65f4b44f2a60f9781",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 25,
+          "decision": "retry",
+          "reason": "Found travel agency participants but need to filter specifically for organization ID 4d36ddb24c9e4cc38572abbd646c1e58. Current results show different org IDs.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8070,
+          "outputTokens": 302,
+          "totalTokens": 8372
+        },
+        "durationMs": 14810,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_ee830ef4e7bc47908140c0e9",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_ee830ef4e7bc47908140c0e9",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 31,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?modelName ?participantName WHERE {\n  ?participant a bboExt:Participant .\n  ?participant bbo:name ?participantName .\n  FILTER(CONTAINS(LCASE(STR(?participantName)), LCASE(\"travel agency\")))\n  ?participant tai:belongsTo ?choreo .\n  ?choreo tai:belongsTo ?defs .\n  ?defs tai:belongsTo ?model .\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  ?org tai:organizationId \"4d36ddb24c9e4cc38572abbd646c1e58\" .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8363,
+          "outputTokens": 171,
+          "totalTokens": 8534
+        },
+        "durationMs": 6813,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_ccfc77f1dd764261aff27868",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_ccfc77f1dd764261aff27868",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "decision": "retry",
+          "reason": "Empty result for org ID 4d36ddb24c9e4cc38572abbd646c1e58. Need to verify if this org ID exists in the dataset.",
+          "confidence": 0.7
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8500,
+          "outputTokens": 214,
+          "totalTokens": 8714
+        },
+        "durationMs": 4944,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_a27c393c11d1484797d24f71",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_a27c393c11d1484797d24f71",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 12,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?org ?orgId ?orgName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId ?orgId .\n  OPTIONAL { ?org bbo:name ?orgName . }\n  FILTER(CONTAINS(LCASE(STR(?orgId)), LCASE(\"4d36ddb24c9e4cc38572abbd646c1e58\")))\n}\nLIMIT 10\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 1
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8784,
+          "outputTokens": 136,
+          "totalTokens": 8920
+        },
+        "durationMs": 5064,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_57d36593101c490abd00c284",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_57d36593101c490abd00c284",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 1,
+          "decision": "retry",
+          "reason": "Found organization exists (Org25). Now need to find models in this org with travel agency participants.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8902,
+          "outputTokens": 337,
+          "totalTokens": 9239
+        },
+        "durationMs": 13056,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_9afd0685f1174c0680fc55cb",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_9afd0685f1174c0680fc55cb",
+        "parentCallId": "llm_0007",
+        "toolName": "sparql_query",
+        "durationMs": 84,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?modelName ?participantName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"4d36ddb24c9e4cc38572abbd646c1e58\" .\n  \n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  \n  ?defs a bboExt:Definitions .\n  ?defs tai:belongsTo ?model .\n  \n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  \n  ?participant a bboExt:Participant .\n  ?participant bbo:name ?participantName .\n  ?participant tai:belongsTo ?choreo .\n  \n  FILTER(CONTAINS(LCASE(STR(?participantName)), LCASE(\"travel agency\")))\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 0,
+          "empty": true
+        },
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "llm_call",
+        "callId": "llm_0008",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9235,
+          "outputTokens": 137,
+          "totalTokens": 9372
+        },
+        "durationMs": 3982,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_6d938c19ed324cc4a2e273ee",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 15,
+        "kind": "tool_exec",
+        "toolCallId": "call_6d938c19ed324cc4a2e273ee",
+        "parentCallId": "llm_0008",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "empty",
+          "rowCount": 0,
+          "decision": "retry",
+          "reason": "Empty result. Let me first check what models exist in this organization to understand the structure better.",
+          "confidence": 0.7
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 16,
+        "kind": "llm_call",
+        "callId": "llm_0009",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9352,
+          "outputTokens": 204,
+          "totalTokens": 9556
+        },
+        "durationMs": 9884,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_bc61d60e906b43589d740b59",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 17,
+        "kind": "tool_exec",
+        "toolCallId": "call_bc61d60e906b43589d740b59",
+        "parentCallId": "llm_0009",
+        "toolName": "sparql_query",
+        "durationMs": 5,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?modelName ?modelId WHERE {\n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:normalizedId ?modelId .\n  ?model tai:belongsTo ?org .\n  ?org tai:organizationId \"4d36ddb24c9e4cc38572abbd646c1e58\" .\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 5
+        },
+        "error": null
+      },
+      {
+        "seq": 18,
+        "kind": "llm_call",
+        "callId": "llm_0010",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9788,
+          "outputTokens": 157,
+          "totalTokens": 9945
+        },
+        "durationMs": 11534,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_a4d11ecdc92a4bd18fdd6956",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 19,
+        "kind": "tool_exec",
+        "toolCallId": "call_a4d11ecdc92a4bd18fdd6956",
+        "parentCallId": "llm_0010",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 5,
+          "decision": "retry",
+          "reason": "Found 5 models in org 4d36ddb24c9e4cc38572abbd646c1e58. Now need to find participants in these models to see if any have travel agencies.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 20,
+        "kind": "llm_call",
+        "callId": "llm_0011",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 9930,
+          "outputTokens": 271,
+          "totalTokens": 10201
+        },
+        "durationMs": 12564,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_d4ca85c46f1546c28d4c1377",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 21,
+        "kind": "tool_exec",
+        "toolCallId": "call_d4ca85c46f1546c28d4c1377",
+        "parentCallId": "llm_0011",
+        "toolName": "sparql_query",
+        "durationMs": 9,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?modelName ?participantName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"4d36ddb24c9e4cc38572abbd646c1e58\" .\n  \n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  \n  ?defs tai:belongsTo ?model .\n  ?choreo tai:belongsTo ?defs .\n  \n  ?participant a bboExt:Participant .\n  ?participant bbo:name ?participantName .\n  ?participant tai:belongsTo ?choreo .\n}\nLIMIT 50\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 26
+        },
+        "error": null
+      },
+      {
+        "seq": 22,
+        "kind": "llm_call",
+        "callId": "llm_0012",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10637,
+          "outputTokens": 140,
+          "totalTokens": 10777
+        },
+        "durationMs": 5501,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_d6b6427ec9b941e4a499421e",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 23,
+        "kind": "tool_exec",
+        "toolCallId": "call_d6b6427ec9b941e4a499421e",
+        "parentCallId": "llm_0012",
+        "toolName": "decision_log",
+        "durationMs": 1,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 26,
+          "decision": "retry",
+          "reason": "Found participants including \"Reisebüro\" (German for travel agency). Need to filter specifically for travel agency variations.",
+          "confidence": 0.9
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 24,
+        "kind": "llm_call",
+        "callId": "llm_0013",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 10759,
+          "outputTokens": 348,
+          "totalTokens": 11107
+        },
+        "durationMs": 20187,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_6c2dbfc7da1b46e7998d527c",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 25,
+        "kind": "tool_exec",
+        "toolCallId": "call_6c2dbfc7da1b46e7998d527c",
+        "parentCallId": "llm_0013",
+        "toolName": "sparql_query",
+        "durationMs": 121,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?modelName ?participantName WHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"4d36ddb24c9e4cc38572abbd646c1e58\" .\n  \n  ?model a bboExt:Model .\n  ?model bbo:name ?modelName .\n  ?model tai:belongsTo ?org .\n  \n  ?defs tai:belongsTo ?model .\n  ?choreo tai:belongsTo ?defs .\n  \n  ?participant a bboExt:Participant .\n  ?participant bbo:name ?participantName .\n  ?participant tai:belongsTo ?choreo .\n  \n  FILTER(CONTAINS(LCASE(STR(?participantName)), LCASE(\"reisebüro\")) || \n         CONTAINS(LCASE(STR(?participantName)), LCASE(\"travel agency\")) ||\n         CONTAINS(LCASE(STR(?participantName)), LCASE(\"travel agency\")))\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 4
+        },
+        "error": null
+      },
+      {
+        "seq": 26,
+        "kind": "llm_call",
+        "callId": "llm_0014",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 11203,
+          "outputTokens": 161,
+          "totalTokens": 11364
+        },
+        "durationMs": 5189,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_784d252cf9864c01873a4ad2",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 27,
+        "kind": "tool_exec",
+        "toolCallId": "call_784d252cf9864c01873a4ad2",
+        "parentCallId": "llm_0014",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 4,
+          "decision": "finalize",
+          "reason": "Found 4 models with travel agency participants (Reisebüro in German). This answers the user's question.",
+          "confidence": 0.95
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 28,
+        "kind": "llm_call",
+        "callId": "llm_0015",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 11324,
+          "outputTokens": 232,
+          "totalTokens": 11556
+        },
+        "durationMs": 11879,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_e5df0cee6ae14855b69cf610",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 29,
+        "kind": "tool_exec",
+        "toolCallId": "call_e5df0cee6ae14855b69cf610",
+        "parentCallId": "llm_0015",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "The following 4 models in organization ID 4d36ddb24c9e4cc38572abbd646c1e58 include travel agencies (\"Reisebüro\") as task participants:\n\n1. **Übung 7 Aufgabe 1** — participant: Reisebüro\n2. **Aufg.5 - Reisebuchung (Kopie)** — participant: Reisebüro\n3. **Reisebüro (Kopie)** — participant: Reisebüro\n4. **Aufg.5 - Reisebuchung** — participant: Reisebüro\n\nNote: The term \"Reisebüro\" is German for \"travel agency\"."
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 30,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-29T18:11:47.636Z",
+        "status": "OK",
+        "finalAnswer": "The following 4 models in organization ID 4d36ddb24c9e4cc38572abbd646c1e58 include travel agencies (\"Reisebüro\") as task participants:\n\n1. **Übung 7 Aufgabe 1** — participant: Reisebüro\n2. **Aufg.5 - Reisebuchung (Kopie)** — participant: Reisebüro\n3. **Reisebüro (Kopie)** — participant: Reisebüro\n4. **Aufg.5 - Reisebuchung** — participant: Reisebüro\n\nNote: The term \"Reisebüro\" is German for \"travel agency\".",
+        "afterCallId": "llm_0015"
+      }
+    ],
+    "counts": {
+      "llmCalls": 15,
+      "toolExecs": 15
+    }
+  }
+}

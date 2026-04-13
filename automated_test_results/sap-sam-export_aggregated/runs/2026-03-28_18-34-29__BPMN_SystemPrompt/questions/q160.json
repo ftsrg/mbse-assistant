@@ -1,0 +1,306 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q160",
+    "question": "When is it necessary to involve a Service-Techniker to resolve a problem? (Organization ID: 1fcd4973039d4c648b9c4535154699d4)",
+    "durationMs": 14873,
+    "status": "OK",
+    "finalAnswer": "In organization **1fcd4973039d4c648b9c4535154699d4**, “**Service-Techniker**” is involved at the following points (i.e., when the preceding control-flow leads into the Service-Techniker-initiated task):\n\n1) Model **4_Choreographie** (Task: **“Formular unterschreiben lassen”**)\n   - Preceded by: **“Problem lösen”**\n\n2) Model **4_Choreographie** (Task: **“Zu Kunde fahren”**)\n   - Preceded by: **“Service-Techniker anrufen”**\n\n3) Model **Choreographiediagramm IST** (Task: **“Zeit und Kosten erfassen”**)\n   - Preceded by: **“Problem lösen”**",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 50756,
+      "outputTokens": 2168,
+      "totalTokens": 52924
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 5901,
+          "outputTokens": 506,
+          "totalTokens": 6407
+        },
+        "durationMs": 2925,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_W8T9tmT0sZQYwcf4BQjfSVjp",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_W8T9tmT0sZQYwcf4BQjfSVjp",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 233,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?taskName ?choreoName ?modelName WHERE {\n  ?org a bboExt:Organization .\n  FILTER(\n    CONTAINS(LCASE(STR(?org)), LCASE(\"1fcd4973039d4c648b9c4535154699d4\")) ||\n    EXISTS { ?org tai:organizationId \"1fcd4973039d4c648b9c4535154699d4\" }\n  )\n\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n  ?model bbo:name ?modelName .\n\n  ?choreo a bboExt:Choreography .\n  ?choreo tai:belongsTo ?defs .\n  ?defs tai:belongsTo ?model .\n  OPTIONAL { ?defs bbo:name ?choreoName }\n\n  ?task a bboExt:ChoreographyTask .\n  ?task tai:belongsTo ?choreo .\n  ?task bbo:name ?taskName .\n\n  ?task bboExt:initiatingParticipantRef ?partRef .\n  ?participant a bboExt:Participant .\n  ?participant tai:belongsTo ?choreo .\n  ?participant bbo:name ?participantName .\n\n  FILTER(\n    LCASE(?participantName) = LCASE(\"Service-Techniker\") ||\n    CONTAINS(LCASE(?participantName), \"service-techniker\") ||\n    CONTAINS(LCASE(STR(?participant)), \"service-techniker\")\n  )\n\n  FILTER(STRENDS(STR(?participant), ?partRef) || ?partRef = STR(?participant))\n}\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 3
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6510,
+          "outputTokens": 170,
+          "totalTokens": 6680
+        },
+        "durationMs": 1321,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_xQSqe8xFidxtznT6JraQsuOV",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_xQSqe8xFidxtznT6JraQsuOV",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 3,
+          "errorType": "",
+          "message": "",
+          "decision": "finalize",
+          "reason": "The query found three choreography tasks in models belonging to organization ID 1fcd4973039d4c648b9c4535154699d4 where the initiating participant is named like “Service-Techniker”. However, the question asks “when” it is necessary, which requires extracting the triggering condition/time from the choreography structure around these tasks; since the current result only identifies the tasks, we need at least to explore which events/gateways precede them. A follow-up targeted query should locate incoming sequence/message flows to these tasks and any associated events such as timer/intermediate catch events.",
+          "confidence": 0.46
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6697,
+          "outputTokens": 516,
+          "totalTokens": 7213
+        },
+        "durationMs": 3172,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_rny0K5ErGU0jAs8hX7ipWXYP",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_rny0K5ErGU0jAs8hX7ipWXYP",
+        "parentCallId": "llm_0003",
+        "toolName": "sparql_query",
+        "durationMs": 3,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?task ?taskName ?modelName ?choreoName ?inEventName ?inType ?inId WHERE {\n  ?org a bboExt:Organization .\n  FILTER(?org tai:organizationId \"1fcd4973039d4c648b9c4535154699d4\") .\n\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n  ?model bbo:name ?modelName .\n\n  ?defs tai:belongsTo ?model .\n  ?choreo a bboExt:Choreography ; tai:belongsTo ?defs .\n  OPTIONAL { ?defs bbo:name ?choreoName }\n\n  ?task a bboExt:ChoreographyTask ; tai:belongsTo ?choreo ; bbo:name ?taskName .\n  ?task bboExt:initiatingParticipantRef ?partRef .\n\n  ?participant a bboExt:Participant ; tai:belongsTo ?choreo ; bbo:name ?participantName .\n  FILTER(\n    LCASE(?participantName) = LCASE(\"Service-Techniker\") ||\n    CONTAINS(LCASE(?participantName), \"service-techniker\")\n  )\n  FILTER(STRENDS(STR(?participant), ?partRef) || ?partRef = STR(?participant))\n\n  # incoming control flow to the task\n  ?seq a bbo:SequenceFlow ; bbo:has_targetRef ?task ; bbo:has_sourceRef ?inNode .\n\n  ?inNode a ?inType .\n  OPTIONAL { ?inNode bbo:name ?inEventName }\n  OPTIONAL { ?inNode bbo:id ?inId }\n}\nORDER BY ?modelName ?taskName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "error",
+          "errorType": "endpoint_error",
+          "httpStatus": 400
+        },
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "llm_call",
+        "callId": "llm_0004",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7273,
+          "outputTokens": 120,
+          "totalTokens": 7393
+        },
+        "durationMs": 1082,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_rIDFVnMlUTGvXEMzHWwzWwEd",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 7,
+        "kind": "tool_exec",
+        "toolCallId": "call_rIDFVnMlUTGvXEMzHWwzWwEd",
+        "parentCallId": "llm_0004",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "error",
+          "rowCount": 0,
+          "errorType": "endpoint_error",
+          "message": "Parse error: Encountered \" <PNAME_LN> \"tai:organizationId \"\" at line 9, column 15.",
+          "decision": "retry",
+          "reason": "The second query failed to parse due to a SPARQL syntax issue around the organization ID filter. I will simplify the organization constraint to a clear FILTER using tai:organizationId directly without extra EXISTS blocks.",
+          "confidence": 0.72
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 8,
+        "kind": "llm_call",
+        "callId": "llm_0005",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 7410,
+          "outputTokens": 539,
+          "totalTokens": 7949
+        },
+        "durationMs": 3189,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_Xb3jGevYO5C7HlLR2ydILy9v",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "kind": "tool_exec",
+        "toolCallId": "call_Xb3jGevYO5C7HlLR2ydILy9v",
+        "parentCallId": "llm_0005",
+        "toolName": "sparql_query",
+        "durationMs": 248,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT\n  ?task\n  ?taskName\n  ?modelName\n  ?choreoName\n  ?inNode\n  ?inType\n  ?inEventName\n  ?inId\nWHERE {\n  ?org a bboExt:Organization .\n  ?org tai:organizationId \"1fcd4973039d4c648b9c4535154699d4\" .\n\n  ?model a bboExt:Model .\n  ?model tai:belongsTo ?org .\n  ?model bbo:name ?modelName .\n\n  ?defs tai:belongsTo ?model .\n  ?choreo a bboExt:Choreography ; tai:belongsTo ?defs .\n  OPTIONAL { ?defs bbo:name ?choreoName . }\n\n  ?task a bboExt:ChoreographyTask ; tai:belongsTo ?choreo ; bbo:name ?taskName .\n  ?task bboExt:initiatingParticipantRef ?partRef .\n\n  ?participant a bboExt:Participant ; tai:belongsTo ?choreo ; bbo:name ?participantName .\n  FILTER(\n    LCASE(?participantName) = LCASE(\"Service-Techniker\") ||\n    CONTAINS(LCASE(?participantName), \"service-techniker\")\n  )\n  FILTER(STRENDS(STR(?participant), ?partRef) || STR(?partRef) = STR(?participant))\n\n  # incoming control flow to the task\n  ?seq a bbo:SequenceFlow ; bbo:has_targetRef ?task ; bbo:has_sourceRef ?inNode .\n  ?inNode a ?inType .\n  OPTIONAL { ?inNode bbo:name ?inEventName . }\n  OPTIONAL { ?inNode bbo:id ?inId . }\n}\nORDER BY ?modelName ?taskName\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 3
+        },
+        "error": null
+      },
+      {
+        "seq": 10,
+        "kind": "llm_call",
+        "callId": "llm_0006",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8413,
+          "outputTokens": 122,
+          "totalTokens": 8535
+        },
+        "durationMs": 1162,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_SZzeVawFaxeNCDHVZV7c4vl3",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 11,
+        "kind": "tool_exec",
+        "toolCallId": "call_SZzeVawFaxeNCDHVZV7c4vl3",
+        "parentCallId": "llm_0006",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 3,
+          "errorType": "",
+          "message": "",
+          "decision": "finalize",
+          "reason": "The refined query succeeded and now returns, for each Service-Techniker-invoking task, the immediate incoming control-flow source node name (e.g., “Problem lösen” or “Service-Techniker anrufen”), which provides the “when” condition in the choreography structure. These results directly indicate the preceding step that triggers involving the Service-Techniker within the specified organization.",
+          "confidence": 0.8
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 12,
+        "kind": "llm_call",
+        "callId": "llm_0007",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 8552,
+          "outputTokens": 195,
+          "totalTokens": 8747
+        },
+        "durationMs": 1504,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_yr8ZJsENjGjfe0K5zoYWjeCU",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 13,
+        "kind": "tool_exec",
+        "toolCallId": "call_yr8ZJsENjGjfe0K5zoYWjeCU",
+        "parentCallId": "llm_0007",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "In organization **1fcd4973039d4c648b9c4535154699d4**, “**Service-Techniker**” is involved at the following points (i.e., when the preceding control-flow leads into the Service-Techniker-initiated task):\n\n1) Model **4_Choreographie** (Task: **“Formular unterschreiben lassen”**)\n   - Preceded by: **“Problem lösen”**\n\n2) Model **4_Choreographie** (Task: **“Zu Kunde fahren”**)\n   - Preceded by: **“Service-Techniker anrufen”**\n\n3) Model **Choreographiediagramm IST** (Task: **“Zeit und Kosten erfassen”**)\n   - Preceded by: **“Problem lösen”**"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 14,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-28T18:44:21.278Z",
+        "status": "OK",
+        "finalAnswer": "In organization **1fcd4973039d4c648b9c4535154699d4**, “**Service-Techniker**” is involved at the following points (i.e., when the preceding control-flow leads into the Service-Techniker-initiated task):\n\n1) Model **4_Choreographie** (Task: **“Formular unterschreiben lassen”**)\n   - Preceded by: **“Problem lösen”**\n\n2) Model **4_Choreographie** (Task: **“Zu Kunde fahren”**)\n   - Preceded by: **“Service-Techniker anrufen”**\n\n3) Model **Choreographiediagramm IST** (Task: **“Zeit und Kosten erfassen”**)\n   - Preceded by: **“Problem lösen”**",
+        "afterCallId": "llm_0007"
+      }
+    ],
+    "counts": {
+      "llmCalls": 7,
+      "toolExecs": 7
+    }
+  }
+}

@@ -1,3 +1,7 @@
+This repo contains a fork of the original project available at: https://git.ai.wu.ac.at/teaming-ai/business-process-management-to-knowledge-graph
+
+
+
 # BPMN2KG: Business Process Model and Notation to Knowledge Graph
 BPMN2KG is a Python command line tool that allows the transformation from a BPMN model in XML to a representation with the resource description framework (RDF). It aims to be a bridge between the fields business process management and semantic web.
 

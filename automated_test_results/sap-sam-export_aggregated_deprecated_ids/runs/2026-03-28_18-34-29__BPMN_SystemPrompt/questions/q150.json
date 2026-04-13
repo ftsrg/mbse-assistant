@@ -1,0 +1,149 @@
+{
+  "top": {
+    "schemaVersion": "question.raw.v2",
+    "runMetaRelPath": "../run.meta.json"
+  },
+  "meta": {
+    "questionId": "q150",
+    "question": "What models in the organization include travel agencies as task participants? (Organization ID: 4d36ddb24c9e4cc38572abbd646c1e58)",
+    "durationMs": 7638,
+    "status": "OK",
+    "finalAnswer": "Models in organization 4d36ddb24c9e4cc38572abbd646c1e58 that include a task participant matching “travel” AND “agency”:\n\n1) Übung 7 Aufgabe 1 — created: 2019-05-02T10:21:47 — originalId: 3e8454e9c46745d8adac9dd8ab91bbf4\n2) Reisebüro (Kopie) — created: 2019-05-02T10:25:50 — originalId: 2e7d7f7d8e394d5c9915951da979159f\n3) Übung 7 Aufgabe 1 — created: 2019-05-02T10:34:23 — originalId: fd06b9038279475db06a729386d36335\n4) Aufg.5 - Reisebuchung — created: 2019-05-02T14:27:57 — originalId: 4ca225a6fabf475682588d60850edbd7\n5) Aufg.5 - Reisebuchung (Kopie) — created: 2019-05-02T16:59:30 — originalId: fdbabf2c73c249729c94699f21c1b41a",
+    "error": null,
+    "tokenUsage": {
+      "inputTokens": 19596,
+      "outputTokens": 824,
+      "totalTokens": 20420
+    }
+  },
+  "conversation": {
+    "traceVersion": "conversation.v2",
+    "events": [
+      {
+        "seq": 0,
+        "kind": "llm_call",
+        "callId": "llm_0001",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 5898,
+          "outputTokens": 396,
+          "totalTokens": 6294
+        },
+        "durationMs": 2794,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_5wiIsE7O0Z3iktZNAVatRfCy",
+            "name": "sparql_query"
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "kind": "tool_exec",
+        "toolCallId": "call_5wiIsE7O0Z3iktZNAVatRfCy",
+        "parentCallId": "llm_0001",
+        "toolName": "sparql_query",
+        "durationMs": 166,
+        "status": "OK",
+        "request": {
+          "query": "\nprefix bbo: <http://www.onto-bpo.eu/ontologies/bbo#>\nprefix bboExt: <http://www.onto-bpo.eu/ontologies/bboExtension#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix tai: <https://www.teamingai-project.eu/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?model ?modelName ?created ?origId WHERE {\n  ?org a bboExt:Organization ;\n       tai:organizationId \"4d36ddb24c9e4cc38572abbd646c1e58\" ;\n       tai:belongsTo ?corpus .\n\n  ?model a bboExt:Model ;\n         bbo:name ?modelName ;\n         tai:belongsTo ?org ;\n         tai:modelCreated ?created ;\n         tai:originalId ?origId .\n\n  ?participant a bboExt:Participant ;\n               tai:belongsTo ?choreo ;\n               bbo:name ?pName .\n\n  FILTER(CONTAINS(LCASE(STR(?pName)), LCASE(\"travel\")))\n  FILTER(CONTAINS(LCASE(STR(?pName)), LCASE(\"agency\")))\n\n  ?task a bboExt:ChoreographyTask ;\n        tai:belongsTo ?choreo ;\n        bboExt:initiatingParticipantRef ?partRef ;\n        tai:belongsTo ?choreo .\n\n  FILTER(STRENDS(STR(?participant), ?partRef))\n}\nORDER BY ?created\nLIMIT 25\n"
+        },
+        "resultSummary": {
+          "type": "select",
+          "rowsFullCount": 5
+        },
+        "error": null
+      },
+      {
+        "seq": 2,
+        "kind": "llm_call",
+        "callId": "llm_0002",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6780,
+          "outputTokens": 121,
+          "totalTokens": 6901
+        },
+        "durationMs": 1410,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_7CqiUOfxlbeVobwmSY9VRoWG",
+            "name": "decision_log"
+          }
+        ]
+      },
+      {
+        "seq": 3,
+        "kind": "tool_exec",
+        "toolCallId": "call_7CqiUOfxlbeVobwmSY9VRoWG",
+        "parentCallId": "llm_0002",
+        "toolName": "decision_log",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "event": "after_sparql",
+          "status": "ok",
+          "rowCount": 5,
+          "errorType": "",
+          "message": "The query found 5 distinct models under the specified organization that include participants matching both “travel” and “agency”. This directly answers the question by listing the model names and their creation/original IDs, so no further exploration is required.",
+          "decision": "finalize",
+          "reason": "Sufficient results were returned and they address the user’s request to identify models containing travel-agency participants in the given organization.",
+          "confidence": 0.86
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 4,
+        "kind": "llm_call",
+        "callId": "llm_0003",
+        "node": "agent",
+        "tokenUsage": {
+          "inputTokens": 6918,
+          "outputTokens": 307,
+          "totalTokens": 7225
+        },
+        "durationMs": 3251,
+        "status": "OK",
+        "output": "",
+        "plannedToolCalls": [
+          {
+            "id": "call_MpAzQpOL54P9jFINtJBBNbnH",
+            "name": "final_answer"
+          }
+        ]
+      },
+      {
+        "seq": 5,
+        "kind": "tool_exec",
+        "toolCallId": "call_MpAzQpOL54P9jFINtJBBNbnH",
+        "parentCallId": "llm_0003",
+        "toolName": "final_answer",
+        "durationMs": 0,
+        "status": "OK",
+        "request": {
+          "answer": "Models in organization 4d36ddb24c9e4cc38572abbd646c1e58 that include a task participant matching “travel” AND “agency”:\n\n1) Übung 7 Aufgabe 1 — created: 2019-05-02T10:21:47 — originalId: 3e8454e9c46745d8adac9dd8ab91bbf4\n2) Reisebüro (Kopie) — created: 2019-05-02T10:25:50 — originalId: 2e7d7f7d8e394d5c9915951da979159f\n3) Übung 7 Aufgabe 1 — created: 2019-05-02T10:34:23 — originalId: fd06b9038279475db06a729386d36335\n4) Aufg.5 - Reisebuchung — created: 2019-05-02T14:27:57 — originalId: 4ca225a6fabf475682588d60850edbd7\n5) Aufg.5 - Reisebuchung (Kopie) — created: 2019-05-02T16:59:30 — originalId: fdbabf2c73c249729c94699f21c1b41a"
+        },
+        "resultSummary": null,
+        "error": null
+      },
+      {
+        "seq": 6,
+        "kind": "decision",
+        "decisionType": "finalize",
+        "at": "2026-03-28T18:40:33.117Z",
+        "status": "OK",
+        "finalAnswer": "Models in organization 4d36ddb24c9e4cc38572abbd646c1e58 that include a task participant matching “travel” AND “agency”:\n\n1) Übung 7 Aufgabe 1 — created: 2019-05-02T10:21:47 — originalId: 3e8454e9c46745d8adac9dd8ab91bbf4\n2) Reisebüro (Kopie) — created: 2019-05-02T10:25:50 — originalId: 2e7d7f7d8e394d5c9915951da979159f\n3) Übung 7 Aufgabe 1 — created: 2019-05-02T10:34:23 — originalId: fd06b9038279475db06a729386d36335\n4) Aufg.5 - Reisebuchung — created: 2019-05-02T14:27:57 — originalId: 4ca225a6fabf475682588d60850edbd7\n5) Aufg.5 - Reisebuchung (Kopie) — created: 2019-05-02T16:59:30 — originalId: fdbabf2c73c249729c94699f21c1b41a",
+        "afterCallId": "llm_0003"
+      }
+    ],
+    "counts": {
+      "llmCalls": 3,
+      "toolExecs": 3
+    }
+  }
+}
