@@ -168,10 +168,8 @@ mkdir -p ~/fuseki-base
 cd ~/tools
 
 wget https://archive.apache.org/dist/jena/binaries/apache-jena-fuseki-5.5.0.zip
-wget https://archive.apache.org/dist/jena/binaries/apache-jena-fuseki-5.5.0.zip.sha512
-
-sha512sum apache-jena-fuseki-5.5.0.zip
-cat apache-jena-fuseki-5.5.0.zip.sha512
+echo "0306f2c9e81fe17fc42beb66bdec9479cd9078ea6b9e3c5a7a78dce44ff904b538aaa2a4619e8174d8917cfb0e9b1c094dba066046019999f2ce10478d1b9a71 *apache-jena-fuseki-5.5.0.zip" \
+  | sha512sum -c || echo "CHECKSUM ERROR"
 
 unzip apache-jena-fuseki-5.5.0.zip
 
@@ -343,7 +341,6 @@ npx tsx agent_workflow/run_questions.ts <questions.txt> <endpoint.txt> <systemPr
 
  - `agent_evaluation/`:
     - `replace_sid_ids_with_original_id.py`: standardizes model IDs in the run results of the BPMN assistant
-    - `meta_data.csv`: the metadata used for standardizing IDs in replace_sid_ids_with_original_id.py
     - `download_embedding_model.ts` - script downloading the embedding model (Xenova/bert-base-cased) used for embedding in BERT Score metric
     - `hf_env.ts`: to keep the embedding model cached in `.cache/transformers/`
     - `keyword_provider.ts`: help get keywords for keyword count based metrics

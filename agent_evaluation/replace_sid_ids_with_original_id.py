@@ -11,7 +11,7 @@ RUN GUIDE
 Purpose
 -------
 This script replaces SID-style model IDs inside benchmark question JSON files
-with the corresponding original BPMN file names from meta_data.csv.
+with the corresponding original BPMN file names from input-models/bpmn-sol-llm-benchmark/data/sap-sam/meta_data.csv.
 
 By default, the script does NOT modify the original dataset folder in place.
 
@@ -50,7 +50,7 @@ The script searches for tokens that:
 
 After a token is found:
 - it is converted to lowercase
-- that lowercase value is looked up in meta_data.csv, in the "model" column
+- that lowercase value is looked up in input-models/bpmn-sol-llm-benchmark/data/sap-sam/meta_data.csv, in the "model" column
 - if a match is found, the token is replaced with the corresponding
   "original_file" value, but with the trailing ".bpmn" removed
 
@@ -71,7 +71,7 @@ This script assumes:
 - the script itself is inside:
       agent_evaluation/
 - the metadata CSV is by default:
-      agent_evaluation/meta_data.csv
+      input-models/bpmn-sol-llm-benchmark/data/sap-sam/meta_data.csv
 - the source dataset folder is by default:
       automated_test_results/sap-sam-export_aggregated
 - the generated working copy is by default:
@@ -100,7 +100,7 @@ Optional custom runs root:
 What the script prints
 ----------------------
 At the end, the script prints:
-- number of mappings loaded from meta_data.csv
+- number of mappings loaded from input-models/bpmn-sol-llm-benchmark/data/sap-sam/meta_data.csv
 - number of JSON files visited
 - number of JSON files changed
 - total number of replacements made
@@ -187,7 +187,7 @@ SID_TOKEN_PATTERN = re.compile(r"(?<!/)sid[_-][A-Za-z0-9_-]+", re.IGNORECASE)
 
 def load_mapping(meta_csv_path: Path) -> dict[str, str]:
     """
-    Load model -> original_file mapping from meta_data.csv.
+    Load model -> original_file mapping from input-models/bpmn-sol-llm-benchmark/data/sap-sam/meta_data.csv.
 
     Expected CSV columns:
         - model
@@ -368,8 +368,8 @@ def main() -> None:
     parser.add_argument(
         "--meta",
         type=Path,
-        default=SCRIPT_DIR / "meta_data.csv",
-        help="Path to meta_data.csv",
+        default=SCRIPT_DIR.parent / "input-models" / "bpmn-sol-llm-benchmark" / "data" / "sap-sam" / "meta_data.csv",
+        help="Path to input-models/bpmn-sol-llm-benchmark/data/sap-sam/meta_data.csv",
     )
 
     parser.add_argument(
@@ -387,7 +387,7 @@ def main() -> None:
     meta_path = args.meta.resolve()
 
     if not meta_path.exists():
-        raise FileNotFoundError(f"meta_data.csv not found: {meta_path}")
+        raise FileNotFoundError(f"input-models/bpmn-sol-llm-benchmark/data/sap-sam/meta_data.csv not found: {meta_path}")
 
     if args.runs_root is not None:
         runs_root = args.runs_root.resolve()
